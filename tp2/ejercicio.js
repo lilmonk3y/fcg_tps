@@ -12,12 +12,29 @@
 function BuildTransform( positionX, positionY, rotation, scale )
 {
 	var transformacionEscala = Array(scale,0,0,0,scale,0,0,0,1);
+	rotation = rotation * Math.PI/180;
 	var transformacionRotacion = 
 		Array(Math.cos(rotation),Math.sin(rotation),0,-Math.sin(rotation),Math.cos(rotation),0,0,0,1);
 	var transformacionTraslacion = Array(1,0,0,0,1,0,positionX,positionY,1);
 	
-	var primerProducto = ComposeTransforms(transformacionEscala, transformacionRotacion);
-	return ComposeTransforms(primerProducto, transformacionTraslacion);
+	var primerProducto = productoMatriz(transformacionRotacion, transformacionEscala);
+	return ComposeTransforms(ComposeTransforms(transformacionEscala, transformacionRotacion), transformacionTraslacion);
+}
+
+function productoMatriz(matriz1, matriz2){
+	if (matriz1.length != matriz2.length) console.log("Matrices tienen dimensiones distintas")
+	var result = Array()
+	var matrixSquareDimension = Math.round(Math.sqrt(matriz1.length));
+	for (j = 0; j < matrixSquareDimension; j++) {
+		for(i = 0; i < matrixSquareDimension; i++) {
+			var sum = 0;
+			for (k = 0; k < matrixSquareDimension; k++) {
+				sum += matriz1[i + k * 3] * matriz2[j * 3 + k]
+			}
+			result.push(sum)
+		}
+	}
+	return result;
 }
 
 // Esta función retorna una matriz que resula de la composición de trasn1 y trans2. Ambas 
@@ -26,19 +43,7 @@ function BuildTransform( positionX, positionY, rotation, scale )
 // primero trans1 y luego trans2. 
 function ComposeTransforms( trans1, trans2 )
 {
-	if (trans1.length != trans2.length) console.log("Matrices tienen dimensiones distintas")
-	var result = Array()
-	var matrixSquareDimension = Math.round(Math.sqrt(trans1.length));
-	for (j = 0; j < matrixSquareDimension; j++) {
-		for(i = 0; i < matrixSquareDimension; i++) {
-			var sum = 0;
-			for (k = 0; k < matrixSquareDimension; k++) {
-				sum += trans1[i + k * 3] * trans2[j * 3 + k]
-			}
-			result.push(sum)
-		}
-	}
-	return result;
+	return productoMatriz(trans2, trans1);
 }
 
 
