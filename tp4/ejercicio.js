@@ -41,18 +41,38 @@
 
 function GetModelViewProjection( projectionMatrix, translationX, translationY, translationZ, rotationX, rotationY )
 {
-	// [COMPLETAR] Modificar el código para formar la matriz de transformación.
-
-	// Matriz de traslación
-	var trans = [
+	var traslacion = [
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
 		translationX, translationY, translationZ, 1
 	];
 
-	var mvp = MatrixMult( projectionMatrix, trans );
-	return mvp;
+	const cosX = Math.cos(rotationX);
+	const senX = Math.sin(rotationX);
+	var rotacionX = [
+		1, 0, 0, 0,
+		0, cosX, senX, 0,
+		0, senX*(-1), cosX, 0,
+		0, 0, 0, 1
+	];
+
+	const cosY = Math.cos(rotationY);
+	const senY = Math.sin(rotationY);
+	var rotacionY = [
+		cosY, 0, senY*(-1), 0,
+		0, 1, 0, 0,
+		senY, 0, cosY, 0,
+		0, 0, 0, 1
+	];
+
+	var res = projectionMatrix;
+	res = MatrixMult( res, traslacion );
+	res = MatrixMult( res, rotacionX);
+	res = MatrixMult( res, rotacionY);
+	
+	// matrix * translation * rotationX * rotationY
+	return res; 
 }
 
 // [COMPLETAR] Completar la implementación de esta clase.
@@ -72,6 +92,32 @@ class MeshDrawer
 		// 4. Obtenemos los IDs de los atributos de los vértices en los shaders
 
 		// ...
+
+		// Creamos el programa webgl con los shaders para los segmentos de recta
+		this.prog   = InitShaderProgram( curvesVS, curvesFS );
+
+		// [Completar] Incialización y obtención de las ubicaciones de los atributos y variables uniformes
+		this.pos = gl.getUniformLocation( this.prog, 'p0' );
+		this.mvp = gl.getUniformLocation( this.prog, 'mvp' );
+		
+		// Obtenemos la ubicación de los atributos de los vértices
+		// en este caso, el step 't'
+		this.step_t = gl.getAttribLocation( this.prog, 't' );
+				
+		// Muestreo del parámetro t
+		this.steps = 100;
+		var tv = [];
+		for ( var i=0; i<this.steps; ++i ) {
+			tv.push( i / (this.steps-1) );
+		}
+		
+		// [Completar] Creacion del vertex buffer y seteo de contenido 
+		this.buffer_steps = gl.createBuffer();
+
+		// Peter: Como estos atributos no van a variar aunque los puntos de control se modifiquen, entonces se pueden
+		// inicializar en el constructor del
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer_steps);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tv), gl.STATIC_DRAW);
 	}
 	
 	// Esta función se llama cada vez que el usuario carga un nuevo archivo OBJ.
