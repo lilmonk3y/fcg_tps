@@ -41,18 +41,38 @@
 
 function GetModelViewProjection( projectionMatrix, translationX, translationY, translationZ, rotationX, rotationY )
 {
-	// [COMPLETAR] Modificar el código para formar la matriz de transformación.
-
-	// Matriz de traslación
-	var trans = [
+	var traslacion = [
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
 		translationX, translationY, translationZ, 1
 	];
 
-	var mvp = MatrixMult( projectionMatrix, trans );
-	return mvp;
+	const cosX = Math.cos(rotationX);
+	const senX = Math.sin(rotationX);
+	var rotacionX = [
+		1, 0, 0, 0,
+		0, cosX, senX, 0,
+		0, senX*(-1), cosX, 0,
+		0, 0, 0, 1
+	];
+
+	const cosY = Math.cos(rotationY);
+	const senY = Math.sin(rotationY);
+	var rotacionY = [
+		cosY, 0, senY*(-1), 0,
+		0, 1, 0, 0,
+		senY, 0, cosY, 0,
+		0, 0, 0, 1
+	];
+
+	var res = projectionMatrix;
+	res = MatrixMult( res, traslacion );
+	res = MatrixMult( res, rotacionX);
+	res = MatrixMult( res, rotacionY);
+	
+	// matrix * translation * rotationX * rotationY
+	return res; 
 }
 
 // [COMPLETAR] Completar la implementación de esta clase.
@@ -64,14 +84,21 @@ class MeshDrawer
 		// [COMPLETAR] inicializaciones
 
 		// 1. Compilamos el programa de shaders
-		
-		// 2. Obtenemos los IDs de las variables uniformes en los shaders
+		this.prog   = InitShaderProgram( meshVS, meshFS );
 
+		// 2. Obtenemos los IDs de las variables uniformes en los shaders
+		this.mvp = gl.getUniformLocation( this.prog, 'mvp' );
+		
 		// 3. Obtenemos los IDs de los atributos de los vértices en los shaders
+		this.pos = gl.getAttribLocation( this.prog, 'pos' );
 
 		// 4. Obtenemos los IDs de los atributos de los vértices en los shaders
 
 		// ...
+
+
+		this.traingle_buffer = gl.createBuffer();
+		this.texture_buffer = gl.createBuffer();
 	}
 	
 	// Esta función se llama cada vez que el usuario carga un nuevo archivo OBJ.
@@ -84,6 +111,15 @@ class MeshDrawer
 	{
 		// [COMPLETAR] Actualizar el contenido del buffer de vértices
 		this.numTriangles = vertPos.length / 3;
+
+		// Buffer de coordenadas de triangulos
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.traingle_buffer);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertPos), gl.STATIC_DRAW);
+		
+		// Debatible, no se si esto si quiera se pasa a la placa
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.texture_buffer);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoords), gl.STATIC_DRAW);
+			
 	}
 	
 	// Esta función se llama cada vez que el usuario cambia el estado del checkbox 'Intercambiar Y-Z'
@@ -97,17 +133,22 @@ class MeshDrawer
 	// El argumento es la matriz de transformación, la misma matriz que retorna GetModelViewProjection
 	draw( trans )
 	{
-		// [COMPLETAR] Completar con lo necesario para dibujar la colección de triángulos en WebGL
-		
 		// 1. Seleccionamos el shader
-	
+		gl.useProgram( this.prog );
+
 		// 2. Setear matriz de transformacion
-		
-	    // 3.Binding de los buffers
-		
-		// ...
-		// Dibujamos
-		// gl.drawArrays( gl.TRIANGLES, 0, this.numTriangles * 3 );
+		gl.useProgram( this.prog );
+		gl.uniformMatrix4fv( this.mvp, false, trans);
+
+		// 3.Binding de los buffers
+		gl.bindBuffer( gl.ARRAY_BUFFER, this.traingle_buffer);
+
+		// Habilitamos el atributo 
+		gl.vertexAttribPointer( this.pos, 3, gl.FLOAT, false, 0, 0 );
+		gl.enableVertexAttribArray( this.pos );
+
+		// https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/drawArrays
+		gl.drawArrays( gl.TRIANGLES, 0, this.numTriangles*3);
 	}
 	
 	// Esta función se llama para setear una textura sobre la malla
