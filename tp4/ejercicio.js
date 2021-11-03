@@ -94,9 +94,6 @@ class MeshDrawer
 
 		// 4. Obtenemos los IDs de los atributos de los vértices en los shaders
 
-		// ...
-
-
 		this.traingle_buffer = gl.createBuffer();
 		this.texture_buffer = gl.createBuffer();
 	}
