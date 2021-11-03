@@ -85,17 +85,20 @@ class MeshDrawer
 
 		// 1. Compilamos el programa de shaders
 		this.prog   = InitShaderProgram( meshVS, meshFS );
-
+		
 		// 2. Obtenemos los IDs de las variables uniformes en los shaders
 		this.mvp = gl.getUniformLocation( this.prog, 'mvp' );
+		this.uSampler = gl.getUniformLocation(this.prog, 'uSampler')
 		
 		// 3. Obtenemos los IDs de los atributos de los vértices en los shaders
 		this.pos = gl.getAttribLocation( this.prog, 'pos' );
-
+		this.text_coord = gl.getAttribLocation( this.prog, 'attr_text_coord' );
+		
 		// 4. Obtenemos los IDs de los atributos de los vértices en los shaders
 
 		this.traingle_buffer = gl.createBuffer();
 		this.texture_buffer = gl.createBuffer();
+		this.texture = gl.createTexture();
 	}
 	
 	// Esta función se llama cada vez que el usuario carga un nuevo archivo OBJ.
@@ -116,7 +119,6 @@ class MeshDrawer
 		// Debatible, no se si esto si quiera se pasa a la placa
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.texture_buffer);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoords), gl.STATIC_DRAW);
-			
 	}
 	
 	// Esta función se llama cada vez que el usuario cambia el estado del checkbox 'Intercambiar Y-Z'
@@ -136,13 +138,19 @@ class MeshDrawer
 		// 2. Setear matriz de transformacion
 		gl.useProgram( this.prog );
 		gl.uniformMatrix4fv( this.mvp, false, trans);
-
+ 
 		// 3.Binding de los buffers
 		gl.bindBuffer( gl.ARRAY_BUFFER, this.traingle_buffer);
 
 		// Habilitamos el atributo 
 		gl.vertexAttribPointer( this.pos, 3, gl.FLOAT, false, 0, 0 );
 		gl.enableVertexAttribArray( this.pos );
+		
+		// Textura
+		gl.bindBuffer( gl.ARRAY_BUFFER, this.texture_buffer);
+		// Habilitamos el atributo 
+		gl.vertexAttribPointer( this.text_coord, 2, gl.FLOAT, false, 0, 0 );
+		gl.enableVertexAttribArray( this.text_coord );
 
 		// https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/drawArrays
 		gl.drawArrays( gl.TRIANGLES, 0, this.numTriangles*3);
@@ -150,16 +158,53 @@ class MeshDrawer
 	
 	// Esta función se llama para setear una textura sobre la malla
 	// El argumento es un componente <img> de html que contiene la textura. 
-	setTexture( img )
-	{
-		// [COMPLETAR] Binding de la textura
+	setTexture( image )
+	{	
+		// Cortesia de https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
+		gl.bindTexture(gl.TEXTURE_2D, this.texture);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
+			gl.RGBA, gl.UNSIGNED_BYTE, image);
+
+		// WebGL1 has different requirements for power of 2 images
+		// vs non power of 2 images so check if the image is a
+		// power of 2 in both dimensions.
+		if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
+			// Yes, it's a power of 2. Generate mips.
+			gl.generateMipmap(gl.TEXTURE_2D);
+		} else {
+			// No, it's not a power of 2. Turn off mips and set
+			// wrapping to clamp to edge
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		}
+
+		gl.useProgram( this.prog );
+		// Tell WebGL we want to affect texture unit 0
+		gl.activeTexture(gl.TEXTURE0);
+		// Tell the shader we bound the texture to texture unit 0
+		gl.uniform1i(this.uSampler, 0);
+	}
+
+	isPowerOf2(value) {
+		return (value & (value - 1)) == 0;
 	}
 	
 	// Esta función se llama cada vez que el usuario cambia el estado del checkbox 'Mostrar textura'
 	// El argumento es un boleano que indica si el checkbox está tildado
 	showTexture( show )
 	{
-		// [COMPLETAR] Setear variables uniformes en el fragment shader
+		// Esto es casero, porfavor sugerir algo mejor Emma
+		if (show) {
+			gl.bindTexture(gl.TEXTURE_2D, this.texture);
+		} else {
+			var emptyTexture = gl.createTexture();
+			gl.bindTexture(gl.TEXTURE_2D, emptyTexture);
+		}
+
+		gl.useProgram( this.prog );
+		gl.activeTexture(gl.TEXTURE0);
+		gl.uniform1i(this.uSampler, 0);
 	}
 }
 
@@ -169,17 +214,66 @@ class MeshDrawer
 var meshVS = `
 	attribute vec3 pos;
 	uniform mat4 mvp;
+	attribute vec2 attr_text_coord;
+	
+	varying vec2 var_text_coord;
+
 	void main()
 	{ 
 		gl_Position = mvp * vec4(pos,1);
+		
+		var_text_coord = attr_text_coord;
 	}
 `;
 
 // Fragment Shader
 var meshFS = `
+	precision mediump int;
 	precision mediump float;
-	void main()
-	{		
-		gl_FragColor = vec4( 1, 0, 0, 1 );
+
+	// The texture unit to use for the color lookup
+	uniform sampler2D uSampler;
+
+	// Data coming from the vertex shader
+	varying vec2 var_text_coord;
+
+	void main() {
+		gl_FragColor = texture2D(uSampler, var_text_coord);
 	}
 `;
+
+//
+// Initialize a texture and load an image.
+// When the image finished loading copy it into the texture.
+//
+function loadTexture(image) {
+	const texture = gl.createTexture();
+
+	const level = 0;
+	const internalFormat = gl.RGBA;
+	const srcFormat = gl.RGBA;
+	const srcType = gl.UNSIGNED_BYTE;
+	
+	gl.bindTexture(gl.TEXTURE_2D, texture);
+	gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+				srcFormat, srcType, image);
+
+	// WebGL1 has different requirements for power of 2 images
+	// vs non power of 2 images so check if the image is a
+	// power of 2 in both dimensions.
+	if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
+		// Yes, it's a power of 2. Generate mips.
+		gl.generateMipmap(gl.TEXTURE_2D);
+	} else {
+		// No, it's not a power of 2. Turn off mips and set
+		// wrapping to clamp to edge
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	}
+	return texture;
+}
+  
+function isPowerOf2(value) {
+	return (value & (value - 1)) == 0;
+}
