@@ -132,11 +132,12 @@ class MeshDrawer
 	// El argumento es la matriz de transformación, la misma matriz que retorna GetModelViewProjection
 	draw( trans )
 	{
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+		
 		// 1. Seleccionamos el shader
 		gl.useProgram( this.prog );
 
 		// 2. Setear matriz de transformacion
-		gl.useProgram( this.prog );
 		gl.uniformMatrix4fv( this.mvp, false, trans);
  
 		// 3.Binding de los buffers
