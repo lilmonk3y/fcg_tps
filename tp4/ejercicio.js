@@ -88,8 +88,9 @@ class MeshDrawer
 		
 		// 2. Obtenemos los IDs de las variables uniformes en los shaders
 		this.mvp = gl.getUniformLocation( this.prog, 'mvp' );
-		this.uSampler = gl.getUniformLocation(this.prog, 'uSampler')
-		
+		this.uSampler = gl.getUniformLocation(this.prog, 'uSampler');
+		this.tEnable_v = gl.getUniformLocation(this.prog, 'tEnabled');
+
 		// 3. Obtenemos los IDs de los atributos de los vértices en los shaders
 		this.pos = gl.getAttribLocation( this.prog, 'pos' );
 		this.text_coord = gl.getAttribLocation( this.prog, 'attr_text_coord' );
@@ -99,6 +100,10 @@ class MeshDrawer
 		this.traingle_buffer = gl.createBuffer();
 		this.texture_buffer = gl.createBuffer();
 		this.texture = gl.createTexture();
+
+		this.swap = false;
+		this.tEnabled = true;
+		this.tLoaded = false;
 	}
 	
 	// Esta función se llama cada vez que el usuario carga un nuevo archivo OBJ.
@@ -110,7 +115,7 @@ class MeshDrawer
 	setMesh( vertPos, texCoords )
 	{
 		// [COMPLETAR] Actualizar el contenido del buffer de vértices
-		this.numTriangles = vertPos.length / 3;
+		this.numTriangles = vertPos.length / 3 / 3;
 
 		// Buffer de coordenadas de triangulos
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.traingle_buffer);
@@ -125,7 +130,7 @@ class MeshDrawer
 	// El argumento es un boleano que indica si el checkbox está tildado
 	swapYZ( swap )
 	{
-		// [COMPLETAR] Setear variables uniformes en el vertex shader
+		this.swap = swap;
 	}
 	
 	// Esta función se llama para dibujar la malla de triángulos
@@ -137,8 +142,13 @@ class MeshDrawer
 		// 1. Seleccionamos el shader
 		gl.useProgram( this.prog );
 
+		if (this.swap) {
+			trans = GetModelViewProjection( trans, 0, 0, 0, 4.71239, 0);
+		}
 		// 2. Setear matriz de transformacion
 		gl.uniformMatrix4fv( this.mvp, false, trans);
+		
+		gl.uniform1f(this.tEnable_v, this.tEnabled && this.tLoaded ? 1.0 : 0.0);
  
 		// 3.Binding de los buffers
 		gl.bindBuffer( gl.ARRAY_BUFFER, this.traingle_buffer);
@@ -161,6 +171,7 @@ class MeshDrawer
 	// El argumento es un componente <img> de html que contiene la textura. 
 	setTexture( image )
 	{	
+		this.tLoaded = true;
 		// Cortesia de https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
 		gl.bindTexture(gl.TEXTURE_2D, this.texture);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
@@ -195,17 +206,7 @@ class MeshDrawer
 	// El argumento es un boleano que indica si el checkbox está tildado
 	showTexture( show )
 	{
-		// Esto es casero, porfavor sugerir algo mejor Emma
-		if (show) {
-			gl.bindTexture(gl.TEXTURE_2D, this.texture);
-		} else {
-			var emptyTexture = gl.createTexture();
-			gl.bindTexture(gl.TEXTURE_2D, emptyTexture);
-		}
-
-		gl.useProgram( this.prog );
-		gl.activeTexture(gl.TEXTURE0);
-		gl.uniform1i(this.uSampler, 0);
+		this.tEnabled = show;
 	}
 }
 
@@ -234,12 +235,13 @@ var meshFS = `
 
 	// The texture unit to use for the color lookup
 	uniform sampler2D uSampler;
+	uniform float tEnabled;
 
 	// Data coming from the vertex shader
 	varying vec2 var_text_coord;
-
+	
 	void main() {
-		gl_FragColor = texture2D(uSampler, var_text_coord);
+		gl_FragColor = tEnabled * texture2D(uSampler, var_text_coord) + (1.0 - tEnabled) * vec4(1.0, 0.0, 0.0, 1.0);
 	}
 `;
 
