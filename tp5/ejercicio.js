@@ -198,6 +198,7 @@ class MeshDrawer
 				[matrixNormal[2],matrixNormal[5],matrixNormal[8]]
 			]
 		);
+
 		var mn = math.transpose(math.inv(matrixT))
 		gl.uniformMatrix3fv( this.mn, false, [
 			mn.get([0,0]),
@@ -315,18 +316,15 @@ var meshVS = `
 
 	varying vec2 texCoord;
 	varying vec3 normCoord;
-	varying vec4 vertCoord;
-	
 	varying vec3 camaraVec;
 
 	void main()
 	{
 		normCoord = attrNormCoord;
-		camaraVec = -1.0 * (mv * vec4(attrNormCoord,1.0)).xyz;
-		vertCoord = mvp * vec4(pos,1);
+		camaraVec = -1.0 * (mv * vec4(pos,1.0)).xyz;
 		texCoord = attrTexCoord;
 
-		gl_Position = vertCoord;
+		gl_Position = mvp * vec4(pos,1);
 		
 	}
 `;
@@ -343,14 +341,14 @@ var meshFS = `
 
 	uniform sampler2D uSampler;
 	uniform float tEnabled;
-
+	
 	uniform mat3 mn;
+
 	uniform vec3 lSource;
 	uniform float alpha;
 
 	varying vec2 texCoord;
 	varying vec3 normCoord;
-	varying vec4 vertCoord;
 	varying vec3 camaraVec;
 
 	void main() {
@@ -360,16 +358,15 @@ var meshFS = `
 
 		vec3 kd = rgba.xyz;
 		vec3 ks = vec3(1.0, 1.0, 1.0);
-		vec3 mvNorm = mn * normCoord;
 
+		vec3 norm = mn * normCoord; 
 		vec3 lv = lSource + camaraVec;
-		vec3 h = lv / normalize(lv);
-		float cos_w = dot(mvNorm, h);
-		float cos_t = dot(mvNorm, lSource);
+		vec3 h = normalize(lv);
+		float cos_w = dot(norm, h);
+		float cos_t = dot(norm, lSource);
 
 		vec3 c = li * max(0.0, cos_t) * (kd + ks * pow(max(0.0, cos_w), alpha) / cos_t); 
-		//c = vec3(cos_t,cos_t,cos_t);
-		gl_FragColor = vec4(c, 1.0);
+		gl_FragColor = vec4(c, rgba.w);
 	}
 	
 
