@@ -313,6 +313,7 @@ var meshVS = `
 
 	uniform mat4 mvp;
 	uniform mat4 mv;
+	uniform mat3 mn;
 
 	varying vec2 texCoord;
 	varying vec3 normCoord;
@@ -320,7 +321,7 @@ var meshVS = `
 
 	void main()
 	{
-		normCoord = attrNormCoord;
+		normCoord = mn * attrNormCoord;
 		camaraVec = -1.0 * (mv * vec4(pos,1.0)).xyz;
 		texCoord = attrTexCoord;
 
@@ -341,8 +342,6 @@ var meshFS = `
 
 	uniform sampler2D uSampler;
 	uniform float tEnabled;
-	
-	uniform mat3 mn;
 
 	uniform vec3 lSource;
 	uniform float alpha;
@@ -354,18 +353,16 @@ var meshFS = `
 	void main() {
 		vec4 rgba = tEnabled * texture2D(uSampler, texCoord) + (1.0 - tEnabled) * vec4(1.0, 0.0, 0.0, 1.0);
 
-		vec3 li = vec3(1.0, 1.0, 1.0);
-
 		vec3 kd = rgba.xyz;
 		vec3 ks = vec3(1.0, 1.0, 1.0);
 
-		vec3 norm = mn * normCoord; 
+		vec3 norm = normalize(normCoord); 
 		vec3 lv = lSource + camaraVec;
 		vec3 h = normalize(lv);
 		float cos_w = dot(norm, h);
 		float cos_t = dot(norm, lSource);
 
-		vec3 c = li * max(0.0, cos_t) * (kd + ks * pow(max(0.0, cos_w), alpha) / cos_t); 
+		vec3 c = max(0.0, cos_t) * (kd + ks * pow(max(0.0, cos_w), alpha) / cos_t); 
 		gl_FragColor = vec4(c, rgba.w);
 	}
 	
