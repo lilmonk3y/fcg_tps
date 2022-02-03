@@ -1,0 +1,8 @@
+Cargar planetas al comienzo y colocar las variables iniciales.
+
+Mejorar posicion de la fuente de luz y ver si se puede mejorar el modelo de iluminacion.
+
+Hacer las orbitas.
+
+Crear sistemas solares aleatorios.
+
