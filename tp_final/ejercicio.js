@@ -266,6 +266,7 @@ class MeshDrawer
 
 		var texture = drawableObject._texture;
 		
+		
 		// 1. Seleccionamos el shader
 		if(drawableObject._selectedPlanetIdx == 0) {
 			// Sun
@@ -404,10 +405,6 @@ class MeshDrawer
 
 		// Binding de la textura
 		gl.bindTexture(gl.TEXTURE_2D, texture);
-
-		console.log("set texture");
-		console.log(drawableObject);
-		console.log(img);
 		
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
 

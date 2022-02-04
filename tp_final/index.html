@@ -11,6 +11,9 @@
     <script type="text/javascript" id="includedscript" src="ejercicio.js"></script>
     <script type="text/javascript" src="objmesh.js"></script>
     <script type="text/javascript" src="planets.js"></script>
+    <script type="text/javascript" src="utils.js"></script>
+    <script type="text/javascript" src="window.js"></script>
+    <script type="text/javascript" src="legacy.js"></script>
 
     <!-- 
         <a href="https://filebin.net/rkphb9a2235mh885/earth_day.jpg" id="planet-download" download hidden></a>
@@ -22,7 +25,7 @@
     <div id="canvas-div"><canvas id="canvas"></canvas></div><div id="controls-div">
     <!-- menu y controles-->
     <div id="controls">
-        <div class="control-group"><canvas id="lightcontrol"></canvas><div id="lightcontrol-label">Dirección de la Luz</div></div>
+        <!-- <div class="control-group"><canvas id="lightcontrol"></canvas><div id="lightcontrol-label">Dirección de la Luz</div></div> -->
         <div class="control-group">
             <form id="planet-selection">
                 <label for="planet">Draw a Planet</label>
@@ -34,9 +37,6 @@
                     <option value="4">Planet 4</option>
                     <option value="5">Planet 5</option>
                     <option value="6">Planet 6</option>
-                    <option value="7">Planet 7</option>
-                    <option value="8">Planet 8</option>
-                    <option value="9">Planet 9</option>
                 </select>
             </form>
             <div class="control"><input id="auto-rotate" name="auto-rotate" type="checkbox" onchange="AutoRotate(this)" /><label for="auto-rotate"> Rotation Speed</label></div>
@@ -47,10 +47,12 @@
             <div class="control"><input id="planet-size-control" type="range" min="1" max="10" value="1" disabled /></div>
             <div class="control"><span id="shininess-label">Intensity:</span><span id="shininess-value">1</span><input id="shininess-exp" type="range" min="0" max="100" value="50" oninput="SetShininess(this)" /></div>
         </div>
+        <!--
         <div class="control-group">
             <div class="control">Model:<br/><input id="obj" type="file" onchange="LoadObj(this)" accept=".obj"/></div>
             <div class="control">Texture:<br/><input id="texture" type="file" onchange="LoadTexture(this)" accept="image/*"/></div>
         </div>
+        -->
         <div class="control-group">
             <img id="texture-img" />
         </div>

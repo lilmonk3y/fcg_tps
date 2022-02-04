@@ -1,8 +1,13 @@
-Cargar planetas al comienzo y colocar las variables iniciales.
+MVP:
+-Tener una versión 0 del código.
+-Hacer set up de todos los planetas al comienzo.
+-Organizar archivos por cada responsabilidad.
+Analizar bugs que queden.
+Mejorar el HTML del proyecto.
 
+
+Mejoras:
+Deploy del código para que Emma pueda accederlo sin tener que hacer mucha magia.
 Mejorar posicion de la fuente de luz y ver si se puede mejorar el modelo de iluminacion.
-
 Hacer las orbitas.
-
 Crear sistemas solares aleatorios.
-

@@ -1,19 +1,77 @@
-planets = [];
-// Initial values when first loading our planets.
-planets_height = [-1, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5]
+var planets = [];
 
-planets_radius = [0, 2, 4, 7, 32, 10, 12];
+async function loadAllPlanets(){
+    var solarSystemProperties = [
+        {
+            index: 0,
+            textureName: 'sun',
+            height: -1,
+            radius: 0,
+            velocity: 0,
+            size: 1.5,
+        },
+		{
+            index: 1,
+            textureName: 'earth_day',
+            height: -0.5,
+            radius: 2,
+            velocity: 2,
+            size: 0.7,
+        },
+		{
+            index: 2,
+            textureName: 'earth_night',
+            height: -0.5,
+            radius: 4,
+            velocity: 4,
+            size: 0.7,
+        },
+		{
+            index: 3,
+            textureName: 'earth_day',
+            height: -0.5,
+            radius: 7,
+            velocity: 6,
+            size: 0.7,
+        },
+		{
+            index: 4,
+            textureName: 'jupiter',
+            height: -0.5,
+            radius: 32,
+            velocity: 8,
+            size: 1,
+        },
+		{
+            index: 5,
+            textureName: 'earth_day',
+            height: -0.5,
+            radius: 10,
+            velocity: 10,
+            size: 1,
+        },
+		{
+            index: 6,
+            textureName: 'earth_day',
+            height: -0.5,
+            radius: 12,
+            velocity: 12,
+            size: 1,
+        },
+    ];
 
-planets_velocity = [0, 2, 4, 6, 8, 10, 12];
+	for(const planetProps of solarSystemProperties){
+		await loadPlanet(planetProps);
+	}
+	DrawScene();
+}
 
-planets_size = [1.5, 0.7, 0.7, 0.7, 1, 1, 1];
-
-async function loadPlanet(){
+async function loadPlanet(props){
 	var planet = await downloadLocalObj('models/planet.obj');
-	var texture = await downloadLocalImg('models/earth_day.jpg');
+	var texture = await downloadLocalImg('models/'+props.textureName+'.jpg');
 
-	loadNewPlanet(planet, 0);
-	addTextureToPlanet(planets[0], texture);
+	loadNewPlanet(planet, props);
+	addTextureToPlanet(planets[props.index], texture);
 }
 
 async function downloadLocalObj(path){
@@ -28,39 +86,24 @@ async function downloadLocalImg(path){
 		.catch(err => console.log(err));
 }
 
-function loadNewPlanet(planetAsText, selectedPlanetIdx){
+function loadNewPlanet(planetAsText, props){
 	var mesh = new ObjMesh;
 	mesh.parse(planetAsText);
-	/*
-	var box = mesh.getBoundingBox();
-	var shift = [
-		-(box.min[0]+box.max[0])/2,
-		-(box.min[1]+box.max[1])/2,
-		-(box.min[2]+box.max[2])/2
-	];
-	var size = [
-		(box.max[0]-box.min[0])/2,
-		(box.max[1]-box.min[1])/2,
-		(box.max[2]-box.min[2])/2
-	];
-	var maxSize = Math.max( size[0], size[1], size[2] );
-	var scale = 1/maxSize;
-	mesh.shiftAndScale( shift, scale );
-	*/
+
 	var buffers = mesh.getVertexBuffers();
 
 	var initDt = Math.random() * 1000;
 
 	var planet = {
-		_selectedPlanetIdx: selectedPlanetIdx,
+		_selectedPlanetIdx: props.index,
 		_mv: null,
 		_mvp: null,
 		_nrmTrans: null,
 		_dt: initDt,
-		_radius: planets_radius[selectedPlanetIdx],
-		_transZ: planets_radius[selectedPlanetIdx] * Math.sin(initDt),
-		_transX: planets_radius[selectedPlanetIdx] * Math.cos(initDt),
-		_transY : planets_height[selectedPlanetIdx],
+		_radius: props.radius,
+		_transZ: props.radius * Math.sin(initDt),
+		_transX: props.radius * Math.cos(initDt),
+		_transY : props.height,
 		_vTexCoord_buffer: null,
 		_position_buffer: null,
 		_normals_buffer: null,
@@ -69,10 +112,11 @@ function loadNewPlanet(planetAsText, selectedPlanetIdx){
 		_texCoord: null,
 		_normals: null,
 		_orbitTimer: null,
-		_vel: planets_velocity[selectedPlanetIdx],
+		_vel: props.velocity,
 		_img: null,
-		_scaleFactor: planets_size[selectedPlanetIdx],
-		_following : false
+		_scaleFactor: props.size,
+		_following : false,
+		_texture: null
 	};
 
 	planet._position = buffers.positionBuffer;
@@ -82,20 +126,18 @@ function loadNewPlanet(planetAsText, selectedPlanetIdx){
 	meshDrawer.setMesh(planet);
 
 	planets.push(planet);
-	DrawScene();
+	//DrawScene();
 }
 
 function addTextureToPlanet(planet,textureImg){
 	let img = new Image();
+    img.style.visibility = 'hidden';
 	document.body.appendChild(img);
 	planet._img = img;
-	img.onload = function(){
-		console.log("addTextureToPlanet");
-		console.log(planet);
-		console.log(this);
 
+	img.onload = function(){
 		meshDrawer.setTexture( planet );
-		DrawScene();
+		//DrawScene();
 	}
 	img.src = URL.createObjectURL(textureImg);
 }
@@ -138,4 +180,18 @@ async function download(url, contentType){
 					'accept':'*/*'
 				} 
 		});	
+}
+
+function readTextFile(file) {
+	var rawFile = new XMLHttpRequest();
+	rawFile.open("GET", file, false);
+	rawFile.onreadystatechange = function () {
+		if (rawFile.readyState === 4) {
+			if (rawFile.status === 200 || rawFile.status == 0) {
+				var allText = rawFile.responseText;
+				alert(allText);
+			}
+		}
+	}
+	rawFile.send(null);
 }
