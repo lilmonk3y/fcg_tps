@@ -196,7 +196,7 @@ function DrawScene()
 
 	planets.forEach((planet) => {
 
-		planet._mv = GetModelViewMatrix(global_transX + planet._transX, global_transY + planet._transY, global_transZ + planet._transZ, global_rotX, global_autorot + global_rotY, planet._scaleFactor * global_scale);
+		planet._mv = GetModelViewMatrix(global_transX + planet._transX, global_transY + planet._transY, global_transZ + planet._transZ, global_rotX, global_rotY + global_autorot, 0 , planet._scaleFactor * global_scale);
 		// Depende de camera position, a target position and a vector that represents the up vector in world space
 		cameraMatrix = getCameraMatrix(Camera.cameraPos, add_vector(Camera.cameraPos, Camera.cameraFront) , Camera.cameraUp);
 		planet._view = MatrixMult(cameraMatrix, planet._mv);
@@ -213,6 +213,30 @@ function WindowResize()
 {
 	UpdateCanvasSize();
 	DrawScene();
+}
+
+function AutoRotate( param )
+{
+	// Si hay que girar...
+	if ( param.checked ) 
+	{
+		// Vamos rotando una cantiad constante cada 30 ms
+		timer = setInterval( function() 
+		{
+				var v = document.getElementById('rotation-speed').value;
+
+				global_autorot = (global_autorot + 0.005 * v) % (2 * Math.PI);
+
+				DrawScene();
+			}, 30
+		);
+		document.getElementById('rotation-speed').disabled = false;
+	} 
+	else 
+	{
+		clearInterval( timer );
+		document.getElementById('rotation-speed').disabled = true;
+	}
 }
 
 function Orbit( param )

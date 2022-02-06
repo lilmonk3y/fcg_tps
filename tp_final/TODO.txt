@@ -2,9 +2,12 @@ MVP:
 -Tener una versión 0 del código.
 -Hacer set up de todos los planetas al comienzo.
 -Organizar archivos por cada responsabilidad.
-Analizar bugs que queden.
+-Eliminar archivos viejos o no usados.
+Analizar bugs que queden. 
+    -> la rotación sobre el mismo eje no está andando bien (los planetas se están deplazando)
+    -> el centro de la luz no es donde aparece el sol.
+    -> el escalado de planetas no anda bien.
 Mejorar el HTML del proyecto.
-
 
 Mejoras:
 Deploy del código para que Emma pueda accederlo sin tener que hacer mucha magia.

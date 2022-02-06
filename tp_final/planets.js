@@ -68,7 +68,7 @@ async function loadAllPlanets(){
 
 async function loadPlanet(props){
 	var planet = await downloadLocalObj('models/planet.obj');
-	var texture = await downloadLocalImg('models/'+props.textureName+'.jpg');
+	var texture = await downloadLocalImg(`models/${props.textureName}.jpg`);
 
 	loadNewPlanet(planet, props);
 	addTextureToPlanet(planets[props.index], texture);
@@ -132,14 +132,15 @@ function loadNewPlanet(planetAsText, props){
 function addTextureToPlanet(planet,textureImg){
 	let img = new Image();
     img.style.visibility = 'hidden';
-	document.body.appendChild(img);
 	planet._img = img;
-
+	
 	img.onload = function(){
 		meshDrawer.setTexture( planet );
 		//DrawScene();
 	}
 	img.src = URL.createObjectURL(textureImg);
+	
+	document.body.appendChild(img);
 }
 
 

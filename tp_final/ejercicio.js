@@ -1,67 +1,4 @@
-
-// <============================================ EJERCICIOS ============================================>
-// a) Implementar la función: OK.
-//
-//      GetModelViewMatrix( translationX, translationY, translationZ, rotationX, rotationY )
-//
-//    Si la implementación es correcta, podrán hacer rotar la caja correctamente (como en el video). Notar 
-//    que esta función no es exactamente la misma que implementaron en el TP4, ya que no recibe por parámetro
-//    la matriz de proyección. Es decir, deberá retornar solo la transformación antes de la proyección model-view (MV)
-//    Es necesario completar esta implementación para que funcione el control de la luz en la interfaz. 
-//    IMPORTANTE: No es recomendable avanzar con los ejercicios b) y c) si este no funciona correctamente. 
-//
-// b) Implementar los métodos: OK.
-//
-//      setMesh( vertPos, texCoords, normals ) OK.
-//      swapYZ( swap ) OK.
-//      draw( matrixMVP, matrixMV, matrixNormal ) OK.
-//
-//    Si la implementación es correcta, podrán visualizar el objeto 3D que hayan cargado, asi como también intercambiar 
-//    sus coordenadas yz. Notar que es necesario pasar las normales como atributo al VertexShader. 
-//    La función draw recibe ahora 3 matrices en column-major: 
-//
-//       * model-view-projection (MVP de 4x4)
-//       * model-view (MV de 4x4)
-//       * normal transformation (MV_3x3)
-//
-//    Estas últimas dos matrices adicionales deben ser utilizadas para transformar las posiciones y las normales del 
-//    espacio objeto al esapcio cámara. 
-//
-// c) Implementar los métodos:
-//
-//      setTexture( img ). OK
-//      showTexture( show ). OK
-//
-//    Si la implementación es correcta, podrán visualizar el objeto 3D que hayan cargado y su textura.
-//    Notar que los shaders deberán ser modificados entre el ejercicio b) y el c) para incorporar las texturas.
-//  
-// d) Implementar los métodos:
-//
-//      setLightDir(x,y,z)
-//      setShininess(alpha)
-//    
-//    Estas funciones se llaman cada vez que se modifican los parámetros del modelo de iluminación en la 
-//    interface. No es necesario transformar la dirección de la luz (x,y,z), ya viene en espacio cámara.
-//
-// Otras aclaraciones: 
-//
-//      * Utilizaremos una sola fuente de luz direccional en toda la escena
-//      * La intensidad I para el modelo de iluminación debe ser seteada como blanca (1.0,1.0,1.0,1.0) en RGB
-//      * Es opcional incorporar la componente ambiental (Ka) del modelo de iluminación
-//      * Los coeficientes Kd y Ks correspondientes a las componentes difusa y especular del modelo 
-//        deben ser seteados con el color blanco. En caso de que se active el uso de texturas, la 
-//        componente difusa (Kd) será reemplazada por el valor de textura. 
-//        
-// <=====================================================================================================>
-
-// Esta función recibe la matriz de proyección (ya calculada), una 
-// traslación y dos ángulos de rotación (en radianes). Cada una de 
-// las rotaciones se aplican sobre el eje x e y, respectivamente. 
-// La función debe retornar la combinación de las transformaciones 
-// 3D (rotación, traslación y proyección) en una matriz de 4x4, 
-// representada por un arreglo en formato column-major. 
-
-function GetModelViewMatrix( translationX, translationY, translationZ, rotationX, rotationY, scaleFactor=1 )
+function GetModelViewMatrix( translationX, translationY, translationZ, rotationX, rotationY, rotationZ, scaleFactor=1 )
 {
 	// Matriz de escalamiento uniforme en formato Column - Major
 	var scale = [
@@ -78,6 +15,7 @@ function GetModelViewMatrix( translationX, translationY, translationZ, rotationX
 		translationX, translationY, translationZ, 1
 	];
 
+	/*
 	// Matriz de rotacion en formato Column - Major
 	var rotX = [
 		1, 0, 0, 0,
@@ -92,10 +30,38 @@ function GetModelViewMatrix( translationX, translationY, translationZ, rotationX
 		0, 1, 0, 0,
 		Math.sin(rotationY), 0, Math.cos(rotationY), 0,
 		0, 0, 0, 1
-	]; 
+	];
+	
+	// Matriz de rotacion en formato Column - Major
+	var rotZ = [
+		Math.cos(rotationZ), Math.sin(rotationZ), 0, 0,
+		-Math.sin(rotationZ), Math.cos(rotationZ), 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	];
+	var scaleAndRot = MatrixMult(MatrixMult(rotZ, MatrixMult(rotY, rotX)), scale);
+	*/
+
+	let r00 = Math.cos(rotationZ) * Math.cos(rotationY);
+	let r01 = Math.cos(rotationZ) * Math.sin(rotationY) * Math.sin(rotationX) - Math.sin(rotationZ) * Math.cos(rotationX);
+	let r02 = Math.cos(rotationZ) * Math.sin(rotationY) * Math.cos(rotationX) + Math.sin(rotationZ) * Math.sin(rotationX);
+
+	let r10 = Math.sin(rotationZ) * Math.cos(rotationY);
+	let r11 = Math.sin(rotationZ) * Math.sin(rotationY) * Math.sin(rotationX) + Math.cos(rotationZ) * Math.cos(rotationX);
+	let r12 = Math.sin(rotationZ) * Math.sin(rotationY) * Math.cos(rotationX) - Math.cos(rotationZ) * Math.sin(rotationX);
+
+	let r20 = - Math.sin(rotationY);
+	let r21 = Math.cos(rotationY) * Math.sin(rotationX);
+	let r22 = Math.cos(rotationY) * Math.cos(rotationX);
+	var rotations = [
+		r00,	r10,	r20,	0,
+		r01,	r11,	r21,	0,					
+		r02,	r12,	r22,	0,					
+		0,		0,		0,		1					
+	];
 
 	//tras rot escala
-	var scaleAndRot = MatrixMult(MatrixMult(rotY, rotX), scale);
+	var scaleAndRot = MatrixMult(rotations, scale);
 	var mv = MatrixMult(trans, scaleAndRot);
 	return mv;
 }
@@ -132,7 +98,6 @@ function getCameraMatrix(position, target, worldUp) {
 }
 
 
-// [COMPLETAR] Completar la implementación de esta clase.
 class MeshDrawer
 {
 	// El constructor es donde nos encargamos de realizar las inicializaciones necesarias. 
@@ -430,9 +395,6 @@ class MeshDrawer
 		gl.uniform1f(this.shininess, shininess);
 	}
 }
-
-
-// [COMPLETAR] Calcular iluminación utilizando Blinn-Phong.
 
 // Recordar que: 
 // Si declarás las variables pero no las usás, es como que no las declaraste

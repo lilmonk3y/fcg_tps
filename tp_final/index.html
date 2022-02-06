@@ -3,10 +3,8 @@
 <head>
     <title> FCG 2021 - TP5</title>
 
-    <!-- estilo-->
     <link href="style.css" rel="stylesheet">
 
-    <script type="text/javascript" id="includedscript" src="lightview.js"></script>
     <script type="text/javascript" id="includedscript" src="project5.js"></script>
     <script type="text/javascript" id="includedscript" src="ejercicio.js"></script>
     <script type="text/javascript" src="objmesh.js"></script>
@@ -15,17 +13,11 @@
     <script type="text/javascript" src="window.js"></script>
     <script type="text/javascript" src="legacy.js"></script>
 
-    <!-- 
-        <a href="https://filebin.net/rkphb9a2235mh885/earth_day.jpg" id="planet-download" download hidden></a>
-    -->
     
 </head>
 <body onresize="WindowResize()">
-    <!-- canvas (WebGL)-->
     <div id="canvas-div"><canvas id="canvas"></canvas></div><div id="controls-div">
-    <!-- menu y controles-->
     <div id="controls">
-        <!-- <div class="control-group"><canvas id="lightcontrol"></canvas><div id="lightcontrol-label">Dirección de la Luz</div></div> -->
         <div class="control-group">
             <form id="planet-selection">
                 <label for="planet">Draw a Planet</label>
@@ -47,12 +39,6 @@
             <div class="control"><input id="planet-size-control" type="range" min="1" max="10" value="1" disabled /></div>
             <div class="control"><span id="shininess-label">Intensity:</span><span id="shininess-value">1</span><input id="shininess-exp" type="range" min="0" max="100" value="50" oninput="SetShininess(this)" /></div>
         </div>
-        <!--
-        <div class="control-group">
-            <div class="control">Model:<br/><input id="obj" type="file" onchange="LoadObj(this)" accept=".obj"/></div>
-            <div class="control">Texture:<br/><input id="texture" type="file" onchange="LoadTexture(this)" accept="image/*"/></div>
-        </div>
-        -->
         <div class="control-group">
             <img id="texture-img" />
         </div>
