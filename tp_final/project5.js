@@ -30,34 +30,12 @@ var fov = 60;
 var timer;
 
 
-class Camera {
-
-	constructor() {
-		this.cameraPos = [0, 0, -10];
-		this.cameraFront = [0, 0, 1];
-		this.cameraUp = [0, 1, 0];
-		this.savedCamPosition = null;
-		this.savedCamFront = null;
-				
-	}
-
-	setPosition(pos) {
-		this.cameraPos = pos;
-	}
-
-	setFront(front) {
-		this.cameraFront = front;
-	}
-
-	setUpVector(up) {
-		this.cameraUp = up;
-	}
-}
-
-Camera = new Camera();
+camera = new Camera();
 cam_spacing = 5;
 keypressed = [0,0,0,0,0,0,0,0,0];
 
+var mouseDown = 0;
+var isOnDiv = false;
 
 
 
@@ -198,7 +176,7 @@ function DrawScene()
 
 		planet._mv = GetModelViewMatrix(global_transX + planet._transX, global_transY + planet._transY, global_transZ + planet._transZ, global_rotX, global_rotY + global_autorot, 0 , planet._scaleFactor * global_scale);
 		// Depende de camera position, a target position and a vector that represents the up vector in world space
-		cameraMatrix = getCameraMatrix(Camera.cameraPos, add_vector(Camera.cameraPos, Camera.cameraFront) , Camera.cameraUp);
+		cameraMatrix = getCameraMatrix(camera.cameraPos, add_vector(camera.cameraPos, camera.cameraFront) , camera.cameraUp);
 		planet._view = MatrixMult(cameraMatrix, planet._mv);
 		planet._mvp = MatrixMult(perspectiveMatrix, planet._view);
 		planet._nrmTrans = [planet._mv[0], planet._mv[1], planet._mv[2], planet._mv[4], planet._mv[5], planet._mv[6], planet._mv[8], planet._mv[9], planet._mv[10]];
@@ -257,10 +235,10 @@ function Orbit( param )
 				if(planet._following){
 						// Sets position and front for following
 						var camFollowPos = [global_transX + planet._transX, global_transY, global_transZ + planet._transZ - cam_spacing];
-						Camera.setPosition(camFollowPos);
+						camera.setPosition(camFollowPos);
 						var front = [0, 0, 1];
 						//var front = [ -planet._radius * Math.sin(planet._dt), 0, planet._radius * Math.cos(planet._dt)]
-						Camera.setFront(front);
+						camera.setFront(front);
 					}
 
 				
