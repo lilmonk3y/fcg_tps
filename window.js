@@ -65,7 +65,6 @@ window.onload = function()
 	document.getElementById('planet').addEventListener('change', function () {
 
 		// Clear planet size control and timers
-		//clearInterval(selectedPlanet._sizeTimer);
 		document.getElementById('planet-size-control').disabled = true;
 		document.getElementById("planet-size").checked = false;
 		planets.forEach((planet) => {

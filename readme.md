@@ -1,3 +1,12 @@
+# Trabajo final de Fundamentos de la computación gráfica
+![Solar system](images/example.png)
+
+Para poder probarlo sin inconvenientes ir la [versión web del proyecto](https://lilmonk3y.github.io/fcg_tps/).
+
+
+## Errores conocidos
+Puede suceder que no se carguen todos los planetas la primera vez accedas a la página pero encontramos que se soluciona refrescando la misma. 
+
 # Correr en local
 
 1. Descargar visual studio code.

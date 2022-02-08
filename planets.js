@@ -4,7 +4,7 @@ async function loadAllPlanets(){
     var solarSystemProperties = [
         {
             index: 0,
-            textureName: 'sun',
+            textureName: 'sun.jpg',
             height: -1,
             radius: 0,
             velocity: 0,
@@ -12,7 +12,7 @@ async function loadAllPlanets(){
         },
 		{
             index: 1,
-            textureName: 'earth_day',
+            textureName: 'mercury.jpeg',
             height: -0.5,
             radius: 2,
             velocity: 2,
@@ -20,7 +20,7 @@ async function loadAllPlanets(){
         },
 		{
             index: 2,
-            textureName: 'earth_night',
+            textureName: 'venus.jpeg',
             height: -0.5,
             radius: 4,
             velocity: 4,
@@ -28,7 +28,7 @@ async function loadAllPlanets(){
         },
 		{
             index: 3,
-            textureName: 'earth_day',
+            textureName: 'earth_day.jpg',
             height: -0.5,
             radius: 7,
             velocity: 6,
@@ -36,15 +36,15 @@ async function loadAllPlanets(){
         },
 		{
             index: 4,
-            textureName: 'jupiter',
+            textureName: 'mars.jpeg',
             height: -0.5,
-            radius: 32,
+            radius: 8,
             velocity: 8,
             size: 1,
         },
 		{
             index: 5,
-            textureName: 'earth_day',
+            textureName: 'jupiter.jpg',
             height: -0.5,
             radius: 10,
             velocity: 10,
@@ -52,9 +52,25 @@ async function loadAllPlanets(){
         },
 		{
             index: 6,
-            textureName: 'earth_day',
+            textureName: 'saturn.jpeg',
             height: -0.5,
             radius: 12,
+            velocity: 12,
+            size: 1,
+        },
+		{
+            index: 7,
+            textureName: 'uranus.jpeg',
+            height: -0.5,
+            radius: 13,
+            velocity: 12,
+            size: 1,
+        },
+		{
+            index: 8,
+            textureName: 'neptune.jpeg',
+            height: -0.5,
+            radius: 14,
             velocity: 12,
             size: 1,
         },
@@ -68,7 +84,7 @@ async function loadAllPlanets(){
 
 async function loadPlanet(props){
 	var planet = await downloadLocalObj('models/planet.obj');
-	var texture = await downloadLocalImg(`models/${props.textureName}.jpg`);
+	var texture = await downloadLocalImg(`models/${props.textureName}`);
 
 	loadNewPlanet(planet, props);
 	addTextureToPlanet(planets[props.index], texture);
@@ -141,58 +157,4 @@ function addTextureToPlanet(planet,textureImg){
 	img.src = URL.createObjectURL(textureImg);
 	
 	document.body.appendChild(img);
-}
-
-
-
-
-
-
-/*                           LO DEJO POR ACÁ POR LAS DUDAS (POR AHORA)                                  */
-
-
-//async function loadPlanet(){
-//	var planetFromInternet = await downloadObj("hosting-publico.s3.amazonaws.com/planet.obj");
-//	var textureImg = await downloadImg("hosting-publico.s3.amazonaws.com/earth_day.jpg");
-//}
-
-async function downloadObj(url){
-	return download(url, "text/plain")
-		.then(resp => resp.text())
-		.catch(err => console.log(err));
-}
-
-async function downloadImg(url){
-	return download(url, "image/jpeg")
-		.then(resp => resp.text())
-		.catch(err => console.log(err));
-}
-
-async function download(url, contentType){
-	return fetch('https://'+url, 
-		{ 
-			//mode: 'no-cors' ,
-			method: 'GET',
-			headers: 
-				{
-					'Content-Type':contentType,
-					/*'Access-Control-Allow-Origin':'*',
-					'Access-Control-Allow-Credentials':'true',*/
-					'accept':'*/*'
-				} 
-		});	
-}
-
-function readTextFile(file) {
-	var rawFile = new XMLHttpRequest();
-	rawFile.open("GET", file, false);
-	rawFile.onreadystatechange = function () {
-		if (rawFile.readyState === 4) {
-			if (rawFile.status === 200 || rawFile.status == 0) {
-				var allText = rawFile.responseText;
-				alert(allText);
-			}
-		}
-	}
-	rawFile.send(null);
 }

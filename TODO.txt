@@ -8,9 +8,13 @@ Analizar bugs que queden.
     -> el centro de la luz no es donde aparece el sol.
     -> el escalado de planetas no anda bien.
 Mejorar el HTML del proyecto.
+Arreglar la selección de planetas y el centrado de cámara (dom element 'planet')
+Escribir el informe del trabajo práctico.
+Agregar el link al informe en el readme del proyecto. 
+    -> agregar un link público a drive referenciando a un pdf creado en overleaf.
 
 Mejoras:
-Deploy del código para que Emma pueda accederlo sin tener que hacer mucha magia.
+-Deploy del código para que Emma pueda accederlo sin tener que hacer mucha magia.
 Mejorar posicion de la fuente de luz y ver si se puede mejorar el modelo de iluminacion.
 Hacer las orbitas.
 Crear sistemas solares aleatorios.

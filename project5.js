@@ -169,21 +169,26 @@ function CompileShader( type, source, wgl=gl )
 // Funcion que reenderiza la escena. 
 function DrawScene()
 {
-
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 	planets.forEach((planet) => {
 
-		planet._mv = GetModelViewMatrix(global_transX + planet._transX, global_transY + planet._transY, global_transZ + planet._transZ, global_rotX, global_rotY + global_autorot, 0 , planet._scaleFactor * global_scale);
-		// Depende de camera position, a target position and a vector that represents the up vector in world space
-		cameraMatrix = getCameraMatrix(camera.cameraPos, add_vector(camera.cameraPos, camera.cameraFront) , camera.cameraUp);
+		planet._mv = GetModelViewMatrix(
+			global_transX + planet._transX,
+			global_transY + planet._transY, 
+			global_transZ + planet._transZ, 
+			global_rotX, 
+			global_rotY + global_autorot, 
+			0, 
+			planet._scaleFactor * global_scale);
+
+		let cameraMatrix = camera.getCameraMatrix();
 		planet._view = MatrixMult(cameraMatrix, planet._mv);
 		planet._mvp = MatrixMult(perspectiveMatrix, planet._view);
 		planet._nrmTrans = [planet._mv[0], planet._mv[1], planet._mv[2], planet._mv[4], planet._mv[5], planet._mv[6], planet._mv[8], planet._mv[9], planet._mv[10]];
 
 		meshDrawer.draw(planet);
 	})
-
 }
 
 // Evento resize
@@ -233,19 +238,15 @@ function Orbit( param )
 				planet._transZ = planet._radius * Math.sin(planet._dt);
 
 				if(planet._following){
-						// Sets position and front for following
-						var camFollowPos = [global_transX + planet._transX, global_transY, global_transZ + planet._transZ - cam_spacing];
-						camera.setPosition(camFollowPos);
-						var front = [0, 0, 1];
-						//var front = [ -planet._radius * Math.sin(planet._dt), 0, planet._radius * Math.cos(planet._dt)]
-						camera.setFront(front);
-					}
-
-				
+					// Sets position and front for following
+					var camFollowPos = [global_transX + planet._transX, global_transY, global_transZ + planet._transZ - cam_spacing];
+					camera.setPosition(camFollowPos);
+					var front = [0, 0, 1];
+					//var front = [ -planet._radius * Math.sin(planet._dt), 0, planet._radius * Math.cos(planet._dt)]
+					camera.setFront(front);
+				}
 
 				DrawScene();
-
-
 			}, 30);
 
 		} else {

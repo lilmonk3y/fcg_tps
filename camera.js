@@ -20,6 +20,33 @@ class Camera {
 	setUpVector(up) {
 		this.cameraUp = up;
 	}
+
+    getCameraMatrix() {
+        // Depende de camera position, a target position and a vector that represents the up vector in world space
+        var target = add_vector(camera.cameraPos, camera.cameraFront);
+
+        let P = this.cameraPos;
+        let D = normalize(substract_vector(target, P));
+        let R = normalize(cross_product(this.cameraUp, D));
+        let U = normalize(cross_product(D, R));
+        
+        //Column-Major
+        var left = [
+            R[0], U[0], D[0], 0,
+            R[1], U[1], D[1], 0,
+            R[2], U[2], D[2], 0,
+            0, 0, 0, 1
+        ];
+    
+        var right = [
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            -P[0], -P[1], -P[2], 1
+        ];
+    
+        return MatrixMult(left, right);
+    }
 }
 
 function keyDownMoveCamera(event){

@@ -15,33 +15,7 @@ function GetModelViewMatrix( translationX, translationY, translationZ, rotationX
 		translationX, translationY, translationZ, 1
 	];
 
-	/*
-	// Matriz de rotacion en formato Column - Major
-	var rotX = [
-		1, 0, 0, 0,
-		0, Math.cos(rotationX), Math.sin(rotationX), 0,
-		0, -Math.sin(rotationX), Math.cos(rotationX), 0,
-		0, 0, 0, 1
-	];
-
-	// Matriz de rotacion en formato Column - Major
-	var rotY = [
-		Math.cos(rotationY), 0, -Math.sin(rotationY), 0,
-		0, 1, 0, 0,
-		Math.sin(rotationY), 0, Math.cos(rotationY), 0,
-		0, 0, 0, 1
-	];
-	
-	// Matriz de rotacion en formato Column - Major
-	var rotZ = [
-		Math.cos(rotationZ), Math.sin(rotationZ), 0, 0,
-		-Math.sin(rotationZ), Math.cos(rotationZ), 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1
-	];
-	var scaleAndRot = MatrixMult(MatrixMult(rotZ, MatrixMult(rotY, rotX)), scale);
-	*/
-
+	// matriz de rotación (column major)
 	let r00 = Math.cos(rotationZ) * Math.cos(rotationY);
 	let r01 = Math.cos(rotationZ) * Math.sin(rotationY) * Math.sin(rotationX) - Math.sin(rotationZ) * Math.cos(rotationX);
 	let r02 = Math.cos(rotationZ) * Math.sin(rotationY) * Math.cos(rotationX) + Math.sin(rotationZ) * Math.sin(rotationX);
@@ -60,43 +34,11 @@ function GetModelViewMatrix( translationX, translationY, translationZ, rotationX
 		0,		0,		0,		1					
 	];
 
-	//tras rot escala
-	var scaleAndRot = MatrixMult(rotations, scale);
-	var mv = MatrixMult(trans, scaleAndRot);
+	var mv = MatrixMult(trans, MatrixMult(rotations, scale));
+
+	// rotations trasformation * scale transformation * translation transformation.
 	return mv;
 }
-
-//function getCameraMatrix(position, target, up) {
-
-function getCameraMatrix(position, target, worldUp) {
-
-	//Esta todo OK. 
-
-	P = position;
-	D = normalize(substract_vector(target, P));
-	R = normalize(cross_product(worldUp, D));
-	U = normalize(cross_product(D, R));
-	
-	//Column-Major
-	var left = [
-		R[0], U[0], D[0], 0,
-		R[1], U[1], D[1], 0,
-		R[2], U[2], D[2], 0,
-		0, 0, 0, 1
-	];
-
-	var right = [
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		-P[0], -P[1], -P[2], 1
-	];
-
-	return MatrixMult(left, right);
-
-	//return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-}
-
 
 class MeshDrawer
 {
@@ -231,10 +173,7 @@ class MeshDrawer
 
 		var texture = drawableObject._texture;
 		
-		
-		// 1. Seleccionamos el shader
-		if(drawableObject._selectedPlanetIdx == 0) {
-			// Sun
+		if( this.isTheSun(drawableObject) ) {
 			gl.useProgram(this.lightSourceProg);
 
 			gl.uniformMatrix4fv( this.mvpLightSource, false, matrixMVP );
@@ -306,9 +245,6 @@ class MeshDrawer
 					break;
 				case 8:
 					gl.activeTexture(gl.TEXTURE8);
-					break;
-				case 9:
-					gl.activeTexture(gl.TEXTURE9);
 					break;
 				default:
 					break;
@@ -393,6 +329,10 @@ class MeshDrawer
 		// Binding del programa y seteo de la variable uniforme que especifica el brillo.
 		gl.useProgram( this.prog );
 		gl.uniform1f(this.shininess, shininess);
+	}
+
+	isTheSun(planet){
+		return planet._selectedPlanetIdx == 0;
 	}
 }
 
