@@ -1,9 +1,10 @@
 <doctype html>
 <html>
 <head>
-    <title> FCG 2021 - TP5</title>
+    <title> FCG 2022 - Trabajo final</title>
 
     <link href="style.css" rel="stylesheet">
+    <link href="modal.css" rel="stylesheet">
 
     <script type="text/javascript" src="camera.js"></script>
     <script type="text/javascript" id="includedscript" src="project5.js"></script>
@@ -13,39 +14,74 @@
     <script type="text/javascript" src="utils.js"></script>
     <script type="text/javascript" src="window.js"></script>
     <script type="text/javascript" src="legacy.js"></script>
-
+    <script type="text/javascript" src="modal.js"></script>
     
 </head>
 <body onresize="WindowResize()">
     <div id="canvas-div"><canvas id="canvas"></canvas></div><div id="controls-div">
-    <div id="controls">
-        <div class="control-group">
-            <form id="planet-selection">
-                <label for="planet">Select a planet</label>
-                <select id="planet">
-                    <option value="0">Sun</option>
-                    <option value="1">Venus</option>
-                    <option value="2">Mercury</option>
-                    <option value="3">Earth</option>
-                    <option value="4">Mars</option>
-                    <option value="5">Jupiter</option>
-                    <option value="6">Saturn</option>
-                    <option value="7">Uranus</option>
-                    <option value="8">Neptune</option>
-                </select>
-            </form>
-            <div class="control"><input id="auto-rotate" name="auto-rotate" type="checkbox" onchange="AutoRotate(this)" /><label for="auto-rotate"> Rotation Speed</label></div>
-            <div class="control"><input id="rotation-speed" type="range" min="1" max="5" value="1" disabled /></div>
-            <div class="control"><input id="auto-orbit" name="auto-orbit" type="checkbox" onchange="Orbit(this)" /><label for="auto-orbit"> Orbit Speed</label></div>
-            <div class="control"><input id="orbit-speed" type="range" min="1" max="5" value="1" disabled /></div>
-            <div class="control"><input id="planet-size" name="planet-size" type="checkbox" onchange="changeSize(this)" /><label for="planet-size"> Planet Size </label></div>
-            <div class="control"><input id="planet-size-control" type="range" min="1" max="10" value="1" disabled /></div>
-            <div class="control"><span id="shininess-label">Intensity:</span><span id="shininess-value">1</span><input id="shininess-exp" type="range" min="0" max="100" value="50" oninput="SetShininess(this)" /></div>
+        <div id="controls">
+            <div class="control-group">
+                <!-- Trigger/Open The Modal -->
+                <button id="myBtn">Instrucciones</button>
+
+                <!-- The Modal -->
+                <div id="myModal" class="modal">
+
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h1>Trabajo final de Fundamentos de la computación gráfica</h1>
+                    <p>
+                        En este trabajo recreamos un sistema solar. Para navegar por la escena tenemos una cámara que se puede desplazar en cualquier dirección.
+                        <br>
+                        Contamos con algunos parámetros configurables como <b>la velocidad de orbitado</b> de los planetas alrededor del sol y <b>la intensidad de la luz del Sol</b>.
+                    </p>
+                    <h2>Comandos de desplazamiento</h2>    
+                    <p>
+                        Para desplazar la cámara usamos las teclas <b>W, A, S y D</b>.
+                        <br>
+                        W: Avanzar
+                        <br>
+                        S: Retroceder.
+                        <br>
+                        A: Desplazamiento a la izquierda.
+                        <br>
+                        D: Desplazamiento a la derecha.
+                        <br>
+                        Para mover el angulo de la cámara usamos el mouse. <b>Cliqueamos y desplazamos en alguna dirección</b>.
+                        <br>
+                        Para fijar la cámara en alguno de los planetas usamos los <b>números del 0-8 donde el 0 es el Sol y el 8 es Neptuno</b>.
+                    </p>
+                </div>
+
+                </div>
+                <br>
+                <br>
+                <div class="control"><input id="auto-orbit" name="auto-orbit" type="checkbox" onchange="Orbit(this)" /><label for="auto-orbit"> Orbit Speed</label></div>
+                <div class="control"><input id="orbit-speed" type="range" min="1" max="5" value="1" disabled /></div>
+                <div class="control"><span id="shininess-label">Light intensity:</span><span id="shininess-value">1</span><input id="shininess-exp" type="range" min="0" max="100" value="50" oninput="SetShininess(this)" /></div>
+                <div hidden>
+                    <form  id="planet-selection">
+                        <label for="planet">Select a planet</label>
+                        <select id="planet">
+                            <option value="0">Sun</option>
+                            <option value="1">Venus</option>
+                            <option value="2">Mercury</option>
+                            <option value="3">Earth</option>
+                            <option value="4">Mars</option>
+                            <option value="5">Jupiter</option>
+                            <option value="6">Saturn</option>
+                            <option value="7">Uranus</option>
+                            <option value="8">Neptune</option>
+                        </select>
+                    </form>
+                    <div  class="control"><input id="auto-rotate" name="auto-rotate" type="checkbox" onchange="AutoRotate(this)" /><label for="auto-rotate"> Rotation Speed</label></div>
+                    <div  class="control"><input id="rotation-speed" type="range" min="1" max="5" value="1" disabled /></div>
+                    <div  class="control"><input id="planet-size" name="planet-size" type="checkbox" onchange="changeSize(this)" /><label for="planet-size"> Planet Size </label></div>
+                    <div  class="control"><input id="planet-size-control" type="range" min="1" max="10" value="1" disabled /></div>
+                </div>
+            </div>
         </div>
-        <div class="control-group">
-            <img id="texture-img" />
-        </div>
-    </div>
     </div>
 </body>
 </html>

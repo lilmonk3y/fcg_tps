@@ -1,6 +1,7 @@
 window.onload = function() 
 {
-	showBox = document.getElementById('show-box');
+	loadModal();
+	
 	InitWebGL();
 	
 	loadAllPlanets();
@@ -80,7 +81,7 @@ window.onload = function()
 
 	document.addEventListener('keydown', (event) => {
 		var name = event.key;
-		if (parseInt(name) > 0 && parseInt(name) < 10){
+		if ( isIndexOfPlanet(name) ){
 			if(!keypressed[parseInt(name)]){
 				keypressed[parseInt(name)] = true;
 				var selectedPlanetIdx = parseInt(name);
@@ -96,12 +97,11 @@ window.onload = function()
 				selectedPlanet._following = true;
 			}
 		}
-
 	})
 
 	document.addEventListener('keyup', (event) => {
 		var name = event.key;
-		if(parseInt(name) > 0 && parseInt(name) < 10){
+		if( isIndexOfPlanet(name) ){
 			keypressed[parseInt(name)] = false;
 			var selectedPlanetIdx = parseInt(name);
 			var selectedPlanet = null;
@@ -115,8 +115,6 @@ window.onload = function()
 			selectedPlanet._following = false;
 			camera.setPosition(camera.savedCamPosition);
 			camera.setFront(camera.savedCamFront);
-
-
 		}
 	});
 

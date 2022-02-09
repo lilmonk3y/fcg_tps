@@ -59,3 +59,7 @@ function MatrixMult( A, B )
 	}
 	return C;
 }
+
+function isIndexOfPlanet(key){
+	return parseInt(key) > -1 && parseInt(key) < 9;
+}
