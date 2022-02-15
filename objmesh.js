@@ -185,6 +185,6 @@ class ObjMesh
 		}
 		
 		// Retornamos un objeto con los atributos de la malla
-		return { positionBuffer: vBuffer, texCoordBuffer: tBuffer, normalBuffer: nBuffer };
+		return { vertexBuffer: vBuffer, texCoordBuffer: tBuffer, normalBuffer: nBuffer };
 	}
 }

@@ -1,9 +1,3 @@
-// Control de intercambiar y-z
-function SwapYZ( param )
-{
-	meshDrawer.swapYZ( param.checked );
-	DrawScene();
-}
 
 // Setear Intensidad
 function SetShininess( param )

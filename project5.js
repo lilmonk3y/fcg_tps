@@ -61,8 +61,6 @@ function InitWebGL()
 	
 	// Setear el tamaño del viewport
 	UpdateCanvasSize();
-
-	//testLoad();
 }
 
 // Funcion para actualizar el tamaño de la ventana cada vez que se hace resize
@@ -185,7 +183,7 @@ function DrawScene()
 		let cameraMatrix = camera.getCameraMatrix();
 		planet._view = MatrixMult(cameraMatrix, planet._mv);
 		planet._mvp = MatrixMult(perspectiveMatrix, planet._view);
-		planet._nrmTrans = [planet._mv[0], planet._mv[1], planet._mv[2], planet._mv[4], planet._mv[5], planet._mv[6], planet._mv[8], planet._mv[9], planet._mv[10]];
+		planet._nrmTrans = transposeMatrix(planet._mv);
 
 		meshDrawer.draw(planet);
 	})

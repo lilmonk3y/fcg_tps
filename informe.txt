@@ -1,0 +1,18 @@
+informe:
+
+agregar a introducción:
+Durante el transcurso de este informe buscaremos informar al lector que no conozca el area de trabajo y también citaremos al código escrito en el repositorio https://github.com/lilmonk3y/fcg_tps para poder guiarlo y explicar conceptos de computación gráfica.
+
+planetas:
+Para representar los planetas de la escena usamos modelos de tipo OBJ. Este tipo de objetos son una estructura utilizada en la computación gráfica por su simpleza. En ella guardamos toda la información de la malla del modelo como sus vertices, las caras de los triangulos y las normales de los mismos. Esta información luego la usamos, junto a las texturas, para indicarle al motor de WebGl que dibuje a los objetos en la escena.
+
+Para obtener las propiedades de la malla de los planetas usamos el código dentro del archivo \it{objmesh.js}. Con dicha clase obtenemos todas las propiedades de la malla que luego usaremos para representar al objeto.
+
+Luego que ya tenemos la malla del objeto, que la podemos pensar como que es el esqueleto del objeto, queremos que este tenga una apariencia de planeta. Para eso usamos texturas, que no son más que imágenes que van sobre la malla.
+
+Después de introducir estos conceptos vamos a ver el código y ubicar estos conceptos allí. En nuestro archivo principal, \it{window.js}, que corre las funciones necesarias para inicializar toda la escena iniciamos el entorno de WebGL. Esto lo hacemos en la función \it{InitWebGL} que se encarga de cargar las bibliotecas necesarias que deben ser provistas por el navegador donde corra. Luego en la función \it{loadAllPlanets} comenzamos a cargar todos los planetas a nuestra escena, por eso buscamos la malla y la textura. Ya con ellos listos comenzamos a agregar esta información en el navegador. Primero llamamos a la función \it{setMesh} donde le indicamos al programa que mantenga una referencia a los datos de la malla de nuestro planeta. Esto se hace por medio buffers, que son variables de webGL donde se comparte información entre nuestro programa javascript y el código que se corre en la placa de video. Luego de agregada la información de la malla, hacemos algo muy similar con la imagen que usaremos como textura dentro de la función \it{setTexture}. Este proceso lo hacemos para cada uno de los planetas en nuestro sistema solar, incluido el sol.
+
+...Continuar con el método "DrawScene" y leer sobre que significa cada una de las transformaciones que se hacen. Leer sobre mv, mvp y mv-transpuesta.
+
+(Hablar sobre el resto de propiedades del planeta que nos permiten identificar la posición del planeta en la orbita y sobre como es que ubicamos a cada planeta en una ubicación random en cada corrida)
+

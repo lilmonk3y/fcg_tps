@@ -1,45 +1,3 @@
-function GetModelViewMatrix( translationX, translationY, translationZ, rotationX, rotationY, rotationZ, scaleFactor=1 )
-{
-	// Matriz de escalamiento uniforme en formato Column - Major
-	var scale = [
-		scaleFactor, 0, 0, 0,
-		0, scaleFactor, 0, 0,
-		0, 0, scaleFactor, 0,
-		0, 0, 0, 1
-	];
-	// Matriz de traslación en formato Column - Major
-	var trans = [
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		translationX, translationY, translationZ, 1
-	];
-
-	// matriz de rotación (column major)
-	let r00 = Math.cos(rotationZ) * Math.cos(rotationY);
-	let r01 = Math.cos(rotationZ) * Math.sin(rotationY) * Math.sin(rotationX) - Math.sin(rotationZ) * Math.cos(rotationX);
-	let r02 = Math.cos(rotationZ) * Math.sin(rotationY) * Math.cos(rotationX) + Math.sin(rotationZ) * Math.sin(rotationX);
-
-	let r10 = Math.sin(rotationZ) * Math.cos(rotationY);
-	let r11 = Math.sin(rotationZ) * Math.sin(rotationY) * Math.sin(rotationX) + Math.cos(rotationZ) * Math.cos(rotationX);
-	let r12 = Math.sin(rotationZ) * Math.sin(rotationY) * Math.cos(rotationX) - Math.cos(rotationZ) * Math.sin(rotationX);
-
-	let r20 = - Math.sin(rotationY);
-	let r21 = Math.cos(rotationY) * Math.sin(rotationX);
-	let r22 = Math.cos(rotationY) * Math.cos(rotationX);
-	var rotations = [
-		r00,	r10,	r20,	0,
-		r01,	r11,	r21,	0,					
-		r02,	r12,	r22,	0,					
-		0,		0,		0,		1					
-	];
-
-	var mv = MatrixMult(trans, MatrixMult(rotations, scale));
-
-	// rotations trasformation * scale transformation * translation transformation.
-	return mv;
-}
-
 class MeshDrawer
 {
 	// El constructor es donde nos encargamos de realizar las inicializaciones necesarias. 
@@ -54,8 +12,6 @@ class MeshDrawer
 		//this.lightColor = gl.getUniformLocation(this.prog, 'lightColor');
 
 		// 2. Obtenemos los IDs de las variables uniformes en los shaders
-		this.yz_swap = this.yz_swap = gl.getUniformLocation(this.prog, 'yz_swap');
-
 		this.mvp = gl.getUniformLocation(this.prog, 'mvp');
 		this.mvpLightSource = gl.getUniformLocation(this.lightSourceProg, 'mvp');
 
@@ -109,45 +65,37 @@ class MeshDrawer
 	// cooredenadas de textura se componen de a 2 elementos 
 	// consecutivos y se  asocian a cada vértice en orden. 
 	setMesh( drawableObject )
-	// Llenar los buffers con los datos cargados por el usuario.
 	{
-
-		var vertPos = drawableObject._position;
-		var texCoords = drawableObject._texCoord;
-		var normals = drawableObject._normals
-
-		drawableObject._numTriangles = vertPos.length / 3 / 3;
+		// Amount of triangles that are in mesh
+		drawableObject._numTriangles = drawableObject._vertex / 3 / 3;
 
 		// 1. Binding y seteo del buffer de vértices
-		// Fill vertex buffer
-		drawableObject._position_buffer = gl.createBuffer();
-		gl.bindBuffer(gl.ARRAY_BUFFER, drawableObject._position_buffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertPos), gl.STATIC_DRAW);
+		drawableObject._vertex_buffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, drawableObject._vertex_buffer);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(drawableObject._vertex), gl.STATIC_DRAW);
 
 		// 2. Binding y seteo del buffer de coordenadas de textura
-		// Fill texCoord buffer
 		drawableObject._vTexCoord_buffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, drawableObject._vTexCoord_buffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoords), gl.STATIC_DRAW);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(drawableObject._texCoord), gl.STATIC_DRAW);
 
 		// 3. Binding y seteo del buffer de normales
-		// Fill normal buffer
 		drawableObject._normals_buffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, drawableObject._normals_buffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(drawableObject._normals), gl.STATIC_DRAW);
 	}
-	
-	// Esta función se llama cada vez que el usuario cambia el estado del checkbox 'Intercambiar Y-Z'
-	// El argumento es un boleano que indica si el checkbox está tildado
-	swapYZ( swap )
+
+	// Esta función se llama para setear una textura sobre la malla
+	// El argumento es un componente <img> de html que contiene la textura. 
+	setTexture( drawableObject )
 	{
-		// Binding del programa y seteo de la variable uniforme que indica el estado del checkbox.
-		gl.useProgram( this.prog );
-		if( swap == true )  {
-			gl.uniform1i(this.yz_swap, 1);
-		} else {
-			gl.uniform1i(this.yz_swap, 0);
-		}
+		// Binding de la textura
+		drawableObject._texture = gl.createTexture();
+		gl.bindTexture(gl.TEXTURE_2D, drawableObject._texture);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, drawableObject._img);
+
+		// Genero los mipmaps de la textura del ultimo buffer bindeado
+		gl.generateMipmap( gl.TEXTURE_2D );
 	}
 	
 	// Esta función se llama para dibujar la malla de triángulos
@@ -157,13 +105,11 @@ class MeshDrawer
 	// normales (matrixNormal) que es la inversa transpuesta de matrixMV
 	draw( drawableObject )
 	{
-		//let white = [1.0, 1.0, 1.0, 1.0];
-
 		var matrixMVP = drawableObject._mvp;
 		var matrixMV = drawableObject._mv;
 		var matrixNormal = drawableObject._nrmTrans;
 
-		var positionBuffer = drawableObject._position_buffer;
+		var positionBuffer = drawableObject._vertex_buffer;
 		var normalsBuffer = drawableObject._normals_buffer;
 		var texCoordBuffer = drawableObject._vTexCoord_buffer;
 
@@ -255,62 +201,9 @@ class MeshDrawer
 			gl.uniform1i(sampler, selectedIdx);
 		
 		}
-		
-		// 2. Setear uniformes con las matrices de transformaciones
-		
 
-   		// 3. Habilitar atributos: vértices, normales, texturas
-   		// Aca estamos pasandole los buffers a los atributos. OK
-
-		// 4. Dibujar los triangulos. OK
+		// Dibujar los triangulos.
 		gl.drawArrays(gl.TRIANGLES, 0, numTriangles * 3);
-
-		//5. Dibujamos la orbita
-		/*
-		var orbit_buffer = gl.createBuffer();
-		
-		gl.bindBuffer(gl.ARRAY_BUFFER, orbit_buffer);
-
-		let vertices = []
-		let radius = drawableObject._radius;
-		for(let i = 0; i < 360; i++) {
-			let x = radius * Math.cos(i);
-			let y = 0;
-			let z = radius * Math.sin(i);
-			vertices.push(x);
-			vertices.push(y);
-			vertices.push(z);
-		}
-
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-
-		gl.vertexAttribPointer( this.pos, 3, gl.FLOAT, false, 0, 0 );
-		gl.enableVertexAttribArray( this.pos );
-
-		//gl.uniform1i(sampler, 0);
-		
-		gl.drawArrays(gl.LINE_LOOP, 0, 20);
-		*/
-
-	}
-	
-	// Esta función se llama para setear una textura sobre la malla
-	// El argumento es un componente <img> de html que contiene la textura. 
-	setTexture( drawableObject )
-	{
-		drawableObject._texture = gl.createTexture();
-
-		var img = drawableObject._img;
-		var selectedIdx = drawableObject._selectedPlanetIdx;
-		var texture = drawableObject._texture;
-
-		// Binding de la textura
-		gl.bindTexture(gl.TEXTURE_2D, texture);
-		
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
-
-		// Genero los mipmaps de la textura del ultimo buffer bindeado
-		gl.generateMipmap( gl.TEXTURE_2D );
 	}
 			
 	// Este método se llama al actualizar la dirección de la luz desde la interfaz
@@ -354,8 +247,6 @@ var meshVS = `
 	varying vec2 texCoord;
 	varying vec3 normCoord;
 	varying vec4 vertCoord;
-
-	uniform int yz_swap;
 
 	void main()
 	{ 

@@ -9,54 +9,17 @@ window.onload = function()
 	canvas.zoom = function( s ) 
 	{
 		fov += s;
-	    //if (fov < 1.0)
-	        //fov = 1.0;
+
 	    if (fov > 60.0)
 	        fov = 60.0; 
 	    perspectiveMatrix = ProjectionMatrix( canvas, n = 0.1, f = 100, fov );
+
 		//UpdateProjectionMatrix();
 		DrawScene();
 	}
 
 	canvas.onwheel = function() { canvas.zoom(0.01*event.deltaY); }
 
-
-	/*
-
-	// Evento de click 
-	canvas.onmousedown = function() 
-	{
-		var cx = event.clientX;
-		var cy = event.clientY;
-		if ( event.ctrlKey ) 
-		{
-			canvas.onmousemove = function() 
-			{
-				canvas.zoom(5*(event.clientY - cy));
-				cy = event.clientY;
-			}
-		}
-		else 
-		{   
-			// Si se mueve el mouse, actualizo las matrices de rotación
-			canvas.onmousemove = function() 
-			{
-				global_rotY += (cx - event.clientX)/canvas.width*5;
-				global_rotX += (cy - event.clientY)/canvas.height*5;
-				cx = event.clientX;
-				cy = event.clientY;
-				UpdateProjectionMatrix();
-				DrawScene();
-			}
-		}
-	}
-
-	// Evento soltar el mouse
-	canvas.onmouseup = canvas.onmouseleave = function() 
-	{
-		canvas.onmousemove = null;
-	}
-	*/
 	
 	SetShininess(document.getElementById('shininess-exp'));
 
@@ -73,11 +36,12 @@ window.onload = function()
 				clearInterval(planet._sizeTimer);
 			}
 		});
-
 	});
+
 
 	// Add key handlers to move camera around
 	document.addEventListener('keydown', event => keyDownMoveCamera(event), false);
+
 
 	document.addEventListener('keydown', (event) => {
 		var name = event.key;
@@ -99,6 +63,7 @@ window.onload = function()
 		}
 	})
 
+
 	document.addEventListener('keyup', (event) => {
 		var name = event.key;
 		if( isIndexOfPlanet(name) ){
@@ -118,25 +83,30 @@ window.onload = function()
 		}
 	});
 
+
 	document.body.onmousedown = function() {
 		if(mouseDown == 0){
 			mouseDown = 1;
 		}
 	}
+
+
 	document.body.onmouseup = function() {
 		if(mouseDown == 1){
 			mouseDown = 0;
 		}
 	}
 	
+
 	document.getElementById("controls").addEventListener("mouseenter", function(  ) {
 		isOnDiv=true;
 	});
+
+
 	document.getElementById("controls").addEventListener("mouseout", function(  ) {
 		isOnDiv=false;
 	});
 
-	
 
 	// Add event listener for mouse movement
 	document.addEventListener('mousemove', event => mouseMoveCamera(event));

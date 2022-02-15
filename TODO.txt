@@ -27,3 +27,7 @@ Mejoras:
 Mejorar posicion de la fuente de luz y ver si se puede mejorar el modelo de iluminacion.
 Hacer las orbitas.
 Crear sistemas solares aleatorios.
+
+
+ideas para arreglar el bug:
+    -> revisar el código del tp5 y revisar si se usan las funciones: getBoundingBox, shiftAndScale

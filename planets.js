@@ -86,8 +86,7 @@ async function loadPlanet(props){
 	var planet = await downloadLocalObj('models/planet.obj');
 	var texture = await downloadLocalImg(`models/${props.textureName}`);
 
-	loadNewPlanet(planet, props);
-	addTextureToPlanet(planets[props.index], texture);
+	loadNewPlanet(planet, props, texture);
 }
 
 async function downloadLocalObj(path){
@@ -102,44 +101,41 @@ async function downloadLocalImg(path){
 		.catch(err => console.log(err));
 }
 
-function loadNewPlanet(planetAsText, props){
-	var mesh = new ObjMesh;
+function loadNewPlanet(planetAsText, props, textureAsText){
+	var mesh = new ObjMesh();
 	mesh.parse(planetAsText);
-
 	var buffers = mesh.getVertexBuffers();
 
 	var initDt = Math.random() * 1000;
 
 	var planet = {
 		_selectedPlanetIdx: props.index,
-		_mv: null,
-		_mvp: null,
-		_nrmTrans: null,
 		_dt: initDt,
 		_radius: props.radius,
 		_transZ: props.radius * Math.sin(initDt),
 		_transX: props.radius * Math.cos(initDt),
 		_transY : props.height,
-		_vTexCoord_buffer: null,
-		_position_buffer: null,
-		_normals_buffer: null,
 		_numTriangles: 0,
-		_position: null,
-		_texCoord: null,
-		_normals: null,
 		_orbitTimer: null,
 		_vel: props.velocity,
-		_img: null,
 		_scaleFactor: props.size,
 		_following : false,
-		_texture: null
+        _img: null,
+		_texture: null,
+        _vertex: buffers.vertexBuffer,
+        _texCoord: buffers.texCoordBuffer,
+        _normals: buffers.normalBuffer,
+        _vTexCoord_buffer: null,
+		_vertex_buffer: null,
+		_normals_buffer: null,
+        _mv: null,
+		_mvp: null,
+		_nrmTrans: null
 	};
 
-	planet._position = buffers.positionBuffer;
-	planet._texCoord = buffers.texCoordBuffer;
-	planet._normals = buffers.normalBuffer;
-
 	meshDrawer.setMesh(planet);
+
+    addTextureToPlanet(planet, textureAsText);
 
 	planets.push(planet);
 	//DrawScene();
