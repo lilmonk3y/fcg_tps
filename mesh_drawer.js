@@ -67,7 +67,7 @@ class MeshDrawer
 	setMesh( drawableObject )
 	{
 		// Amount of triangles that are in mesh
-		drawableObject._numTriangles = drawableObject._vertex / 3 / 3;
+		drawableObject._numTriangles = drawableObject._vertex.length / 3 / 3;
 
 		// 1. Binding y seteo del buffer de vértices
 		drawableObject._vertex_buffer = gl.createBuffer();
