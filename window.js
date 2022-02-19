@@ -44,13 +44,8 @@ window.onload = function()
 		if ( isIndexOfPlanet(name) ){
 			if(!keypressed[parseInt(name)]){
 				keypressed[parseInt(name)] = true;
-				var selectedPlanetIdx = parseInt(name);
-				var selectedPlanet = null;
-				planets.forEach((planet) => {
-					if (planet._selectedPlanetIdx == selectedPlanetIdx) {
-					selectedPlanet = planet;
-					}
-				});
+				var selectedPlanet = getPlanetByIndex(parseInt(name));
+				
 				//Save camera Position + Front
 				camera.savedCamPosition = camera.cameraPos;
 				camera.savedCamFront = camera.cameraFront;
@@ -63,15 +58,9 @@ window.onload = function()
 		var name = event.key;
 		if( isIndexOfPlanet(name) ){
 			keypressed[parseInt(name)] = false;
-			var selectedPlanetIdx = parseInt(name);
-			var selectedPlanet = null;
-			planets.forEach((planet) => {
-				if (planet._selectedPlanetIdx == selectedPlanetIdx) {
-					selectedPlanet = planet;
-				}
-			});
-			//Save camera Position + Front
+			var selectedPlanet = getPlanetByIndex(parseInt(name));
 			
+			//Save camera Position + Front
 			selectedPlanet._following = false;
 			camera.setPosition(camera.savedCamPosition);
 			camera.setFront(camera.savedCamFront);

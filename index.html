@@ -56,8 +56,9 @@
                 </div>
                 <br>
                 <br>
+                <div class="control"><input id="real-dim" name="real-dim" type="checkbox" onchange="SetRealDimensions(this)" /><label for="real-dim"> Set real dimensions</label></div>
                 <div class="control"><input id="auto-orbit" name="auto-orbit" type="checkbox" onchange="Orbit(this)" /><label for="auto-orbit"> Orbit Speed</label></div>
-                <div class="control"><input id="orbit-speed" type="range" min="1" max="5" value="1" disabled /></div>
+                <div class="control"><input id="orbit-speed" type="range" min="1" max="10" value="1" step="1" disabled /></div>
                 <div class="control"><input id="auto-rotate" name="auto-rotate" type="checkbox" onchange="AutoRotate(this)" /><label for="auto-rotate"> Rotation Speed</label></div>
                 <div class="control"><input id="rotation-speed" type="range" min="1" max="5" value="1" disabled /></div>
                 <div class="control"><span id="shininess-label">Light intensity:</span><span id="shininess-value">1</span><input id="shininess-exp" type="range" min="0" max="100" value="50" oninput="SetShininess(this)" /></div>

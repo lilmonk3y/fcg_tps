@@ -1,8 +1,13 @@
 class Camera {
 
 	constructor() {
+        /*
 		this.cameraPos = [0, 0, -10];
 		this.cameraFront = [0, 0, 1];
+		this.cameraUp = [0, 1, 0];
+        */
+        this.cameraPos = [-0.9633150992925572,3.6318900153232025,-11.314361217935721];
+		this.cameraFront = [0.06674394165434341,-0.2907021935982532,0.954482834256125];
 		this.cameraUp = [0, 1, 0];
 		this.savedCamPosition = null;
 		this.savedCamFront = null;

@@ -188,7 +188,6 @@ function WindowResize()
 
 function AutoRotate( param )
 {
-	// Si hay que girar...
 	if ( param.checked ) 
 	{
 		// Vamos rotando una cantiad constante cada 30 ms
@@ -227,7 +226,8 @@ function Orbit( param )
 
 				if(planet._following){
 					// Sets position and front for following
-					var camFollowPos = [global_transX + planet._transX, global_transY, global_transZ + planet._transZ - cam_spacing];
+
+					var camFollowPos = [global_transX + planet._transX, global_transY, global_transZ + planet._transZ - cam_spacing  ];
 					camera.setPosition(camFollowPos);
 					var front = [0, 0, 1];
 					//var front = [ -planet._radius * Math.sin(planet._dt), 0, planet._radius * Math.cos(planet._dt)]
@@ -287,5 +287,15 @@ function SetShininess( param )
 	var s = Math.pow(10,exp/25);
 	document.getElementById('shininess-value').innerText = s.toFixed( s < 10 ? 2 : 0 );
 	meshDrawer.setShininess(s);
+	DrawScene();
+}
+
+function SetRealDimensions(param){
+	if(param.checked){
+		planets.forEach(planet => updateRealDimesions(planet));
+	}else{
+		planets.forEach(planet => updateFakeDimensions(planet));
+	}
+
 	DrawScene();
 }
