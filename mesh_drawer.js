@@ -1,15 +1,10 @@
 class MeshDrawer
 {
-	// El constructor es donde nos encargamos de realizar las inicializaciones necesarias. 
 	constructor()
 	{
 		// 1. Compilamos el programa de shaders
 		this.prog = InitShaderProgram( meshVS, meshFS );
 		this.lightSourceProg = InitShaderProgram( meshVS, lightSourceFS );
-
-		// Get uniforms for planet colors
-		//this.objectColor = gl.getUniformLocation(this.prog, 'objectColor');
-		//this.lightColor = gl.getUniformLocation(this.prog, 'lightColor');
 
 		// 2. Obtenemos los IDs de las variables uniformes en los shaders
 		this.mvp = gl.getUniformLocation(this.prog, 'mvp');
@@ -21,9 +16,7 @@ class MeshDrawer
 		this.mn = gl.getUniformLocation(this.prog, 'mn');
 		this.mnLightSource = gl.getUniformLocation(this.lightSourceProg, 'mn');
 
-		//this.show_texture = gl.getUniformLocation(this.prog, 'show_texture'); 
-
-		//this.light_direction = gl.getUniformLocation(this.prog, 'light_direction'); 
+		this.light_position = gl.getUniformLocation(this.prog, "light_position");
 		this.shininess = gl.getUniformLocation(this.prog, 'shininess'); 
 		
 		this.I = gl.getUniformLocation(this.prog, 'I');
@@ -52,6 +45,8 @@ class MeshDrawer
 		gl.uniform4fv(this.I, white);
 		gl.uniform4fv(this.Ks, white);
 		gl.uniform4fv(this.Kd_no_tex, white);
+
+		gl.uniform3fv(this.light_position, [0, 0, 0]);
 	}
 	
 	// Esta función se llama cada vez que el usuario carga un nuevo
@@ -148,9 +143,6 @@ class MeshDrawer
 
 			gl.useProgram(this.prog);
 
-			//gl.uniform4fv(this.lightColor, white);
-			//gl.uniform4fv(this.objectColor, [1.0, 0.5, 0.31, 1.0]);
-
 			gl.uniformMatrix4fv( this.mvp, false, matrixMVP );
 			gl.uniformMatrix4fv( this.mv, false, matrixMV );
 			gl.uniformMatrix3fv( this.mn, false, matrixNormal );
@@ -205,16 +197,6 @@ class MeshDrawer
 		// Dibujar los triangulos.
 		gl.drawArrays(gl.TRIANGLES, 0, numTriangles * 3);
 	}
-			
-	// Este método se llama al actualizar la dirección de la luz desde la interfaz
-	// No es necesario transformar la dirección de la luz (x,y,z), ya viene en espacio cámara.
-	setLightDir( x, y, z )
-	{		
-		// Binding del programa y seteo de la variable uniforme que especifica la dirección de la luz.
-		gl.useProgram( this.prog );
-		//gl.uniform3fv(this.light_direction, [x, y, z]);
-
-	}
 		
 	// Este método se llama al actualizar el brillo del material 
 	setShininess( shininess )
@@ -228,12 +210,6 @@ class MeshDrawer
 		return planet._selectedPlanetIdx == 0;
 	}
 }
-
-// Recordar que: 
-// Si declarás las variables pero no las usás, es como que no las declaraste
-// y va a tirar error. Siempre va punto y coma al finalizar la sentencia. 
-// Las constantes en punto flotante necesitan ser expresadas como x.y, 
-// incluso si son enteros: ejemplo, para 4 escribimos 4.0.
 
 // Vertex Shader
 var meshVS = `
@@ -285,9 +261,8 @@ var meshFS = `
 	uniform mat3 mn;
 
 	uniform sampler2D texGPU;
-	uniform int show_texture;
 
-	vec3 light_direction;
+	uniform vec3 light_position;
 	uniform float shininess;
 
 	uniform vec4 I;
@@ -304,7 +279,7 @@ var meshFS = `
 		float ambient_strength = 0.1;
 		vec4 ambient = I * ambient_strength;
 
-		light_direction = vec3(0, 0, 0) - vec3(vertCoord.x, vertCoord.y, vertCoord.z);
+		vec3 light_direction = light_position - vec3(vertCoord.x, vertCoord.y, vertCoord.z);
 		
 		vec3 n = normalize( mn * normCoord );
 		vec3 l = normalize( light_direction );
@@ -317,13 +292,7 @@ var meshFS = `
 		float cos_theta = dot(n, l);
 		float cos_omega = dot(n, h);
 
-		if( cos_theta <= 0.0 ) {
-			gl_FragColor = ambient * Kd + vec4(0, 0, 0, 0);
-		} else if( cos_omega <= 0.0 ) {
-			gl_FragColor = ambient * Kd + ( I * cos_theta * Kd );
-		} else {
-			gl_FragColor = ambient * Kd + (  ( I * cos_theta ) * (Kd + ( Ks * pow(cos_omega, shininess) ) / cos_theta ) ); 
-		}
+		gl_FragColor = ambient * Kd + (  ( I * max(0.0,cos_theta) ) * (Kd + ( Ks * pow(max(0.0, cos_omega), shininess) ) / cos_theta ) ); 
 	}
 `;
 

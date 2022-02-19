@@ -5,7 +5,6 @@ async function loadAllPlanets(){
         {
             index: 0,
             textureName: 'sun.jpg',
-            height: -1,
             radius: 0,
             velocity: 0,
             size: 1.5,
@@ -13,64 +12,56 @@ async function loadAllPlanets(){
 		{
             index: 1,
             textureName: 'mercury.jpeg',
-            height: -0.5,
-            radius: 2,
+            radius: 4,
             velocity: 2,
             size: 0.7,
         },
 		{
             index: 2,
             textureName: 'venus.jpeg',
-            height: -0.5,
-            radius: 4,
+            radius: 7,
             velocity: 4,
             size: 0.7,
         },
 		{
             index: 3,
             textureName: 'earth_day.jpg',
-            height: -0.5,
-            radius: 7,
+            radius: 10,
             velocity: 6,
             size: 0.7,
         },
 		{
             index: 4,
             textureName: 'mars.jpeg',
-            height: -0.5,
-            radius: 8,
+            radius: 15,
             velocity: 8,
             size: 1,
         },
 		{
             index: 5,
             textureName: 'jupiter.jpg',
-            height: -0.5,
-            radius: 10,
+            radius: 50,
             velocity: 10,
             size: 1,
         },
 		{
             index: 6,
             textureName: 'saturn.jpeg',
-            height: -0.5,
-            radius: 12,
+            radius: 100,
             velocity: 12,
             size: 1,
         },
 		{
             index: 7,
             textureName: 'uranus.jpeg',
-            height: -0.5,
-            radius: 13,
+            radius: 200,
             velocity: 12,
             size: 1,
         },
 		{
             index: 8,
             textureName: 'neptune.jpeg',
-            height: -0.5,
-            radius: 14,
+            radius: 300,
             velocity: 12,
             size: 1,
         },
@@ -79,6 +70,7 @@ async function loadAllPlanets(){
 	for(const planetProps of solarSystemProperties){
 		await loadPlanet(planetProps);
 	}
+
 	DrawScene();
 }
 
@@ -114,11 +106,11 @@ function loadNewPlanet(planetAsText, props, textureAsText){
 		_radius: props.radius,
 		_transZ: props.radius * Math.sin(initDt),
 		_transX: props.radius * Math.cos(initDt),
-		_transY : props.height,
+		_transY : 0,
 		_numTriangles: 0,
 		_orbitTimer: null,
 		_vel: props.velocity,
-		_scaleFactor: props.size,
+		_scaleFactor: props.size/10,
 		_following : false,
         _img: null,
 		_texture: null,

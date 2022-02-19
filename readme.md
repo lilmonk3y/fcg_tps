@@ -1,11 +1,12 @@
 # Trabajo final de Fundamentos de la computación gráfica
-![Solar system](images/example2.png)
+![Solar system](images/example3.png)
 
 Para poder probarlo sin inconvenientes ir la [versión web del proyecto](https://lilmonk3y.github.io/fcg_tps/).
+Escribimos un informe describiendo el trabajo en [esta carpeta](https://drive.google.com/drive/folders/1oBP_JgJKc2-NmDMml-Kf_GmF9grZnYd3?usp=sharing).
 
 En este trabajo recreamos un sistema solar. Para navegar por la escena tenemos una cámara que se puede desplazar en cualquier dirección.
 
-Contamos con algunos parámetros configurables como __la velocidad de orbitado__ de los planetas alrededor del sol y __la intensidad de la luz del Sol__.
+Contamos con algunos parámetros configurables como __la velocidad de orbitado__ de los planetas alrededor del sol, __la intensidad de la luz del Sol__, la __velocidad de rotación__ sobre su propio eje y también el __diametro de los planetas__.
 
 ## Comandos de desplazamiento
 

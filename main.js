@@ -91,10 +91,6 @@ function UpdateCanvasSize()
 function ProjectionMatrix( c, n = 0.1, f = 100, fov_angle=60 )
 {
 	var r = c.width / c.height;
-	//var n = (global_transZ - 1.74);
-	//const min_n = 0.001;
-	//if ( n < min_n ) n = min_n;
-	//var f = (transZ + 1.74);
 	var n = 0.1;
 	var f = 100;
 	var fov = 3.145 * fov_angle / 180;
@@ -106,12 +102,6 @@ function ProjectionMatrix( c, n = 0.1, f = 100, fov_angle=60 )
 		0, 0, (n+f)/(f-n), 1,
 		0, 0, -2*n*f/(f-n), 0
 	];
-
-	/*return [1, 0, 0, 0,
-	0, 1, 0, 0,
-	0, 0, 1, 0,
-	0, 0, 0, 1];
-*/
 }
 
 // Devuelve la matriz de perspectiva (column-major)
@@ -256,25 +246,30 @@ function Orbit( param )
 
 }
 
-function changeSize(param) {
-
+function getSelectedPlanet(){
 	var selectedPlanetIdx = document.querySelector('#planet').selectedIndex;
 
-	var selectedPlanet = null;
-	planets.forEach((planet) => {
+	for(planet of planets){
 		if (planet._selectedPlanetIdx == selectedPlanetIdx) {
-			selectedPlanet = planet;
+			return planet;
 		}
-	});
+	};
+
+	return null; /* maybe must throw an error */
+}
+
+function changeSize(param) {
+	var selectedPlanet = getSelectedPlanet();
 	
 	if (param.checked) {
 		document.getElementById('planet-size-control').disabled = false;
 		// Loads from previous value
-		document.getElementById('planet-size-control').value = selectedPlanet._scaleFactor;
+		document.getElementById('planet-size-control').value = 1;
 
+		selectedPlanet._originalScaleFactor = selectedPlanet._scaleFactor;
 		selectedPlanet._sizeTimer = setInterval(function () {
 			var size = document.getElementById("planet-size-control").value;
-			selectedPlanet._scaleFactor = size;
+			selectedPlanet._scaleFactor = size * selectedPlanet._originalScaleFactor;
 
 			DrawScene();
 		}, 30);
@@ -283,5 +278,14 @@ function changeSize(param) {
 		clearInterval(selectedPlanet._sizeTimer);
 		document.getElementById('planet-size-control').disabled = true;
 	}
+}
 
+// Setear Intensidad
+function SetShininess( param )
+{
+	var exp = param.value;
+	var s = Math.pow(10,exp/25);
+	document.getElementById('shininess-value').innerText = s.toFixed( s < 10 ? 2 : 0 );
+	meshDrawer.setShininess(s);
+	DrawScene();
 }

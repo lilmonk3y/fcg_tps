@@ -7,13 +7,12 @@
     <link href="modal.css" rel="stylesheet">
 
     <script type="text/javascript" src="camera.js"></script>
-    <script type="text/javascript" id="includedscript" src="project5.js"></script>
+    <script type="text/javascript" id="includedscript" src="main.js"></script>
     <script type="text/javascript" id="includedscript" src="mesh_drawer.js"></script>
     <script type="text/javascript" src="objmesh.js"></script>
     <script type="text/javascript" src="planets.js"></script>
     <script type="text/javascript" src="utils.js"></script>
     <script type="text/javascript" src="window.js"></script>
-    <script type="text/javascript" src="legacy.js"></script>
     <script type="text/javascript" src="modal.js"></script>
     
 </head>
@@ -34,7 +33,7 @@
                     <p>
                         En este trabajo recreamos un sistema solar. Para navegar por la escena tenemos una cámara que se puede desplazar en cualquier dirección.
                         <br>
-                        Contamos con algunos parámetros configurables como <b>la velocidad de orbitado</b> de los planetas alrededor del sol y <b>la intensidad de la luz del Sol</b>.
+                        Contamos con algunos parámetros configurables como <b>la velocidad de orbitado</b> de los planetas alrededor del sol, <b>la intensidad de la luz del Sol</b>, la <b>velocidad de rotación</b> sobre su propio eje y también el <b>diametro de los planetas</b>.
                     </p>
                     <h2>Comandos de desplazamiento</h2>    
                     <p>
@@ -59,27 +58,27 @@
                 <br>
                 <div class="control"><input id="auto-orbit" name="auto-orbit" type="checkbox" onchange="Orbit(this)" /><label for="auto-orbit"> Orbit Speed</label></div>
                 <div class="control"><input id="orbit-speed" type="range" min="1" max="5" value="1" disabled /></div>
+                <div class="control"><input id="auto-rotate" name="auto-rotate" type="checkbox" onchange="AutoRotate(this)" /><label for="auto-rotate"> Rotation Speed</label></div>
+                <div class="control"><input id="rotation-speed" type="range" min="1" max="5" value="1" disabled /></div>
                 <div class="control"><span id="shininess-label">Light intensity:</span><span id="shininess-value">1</span><input id="shininess-exp" type="range" min="0" max="100" value="50" oninput="SetShininess(this)" /></div>
-                <div hidden>
-                    <form  id="planet-selection">
-                        <label for="planet">Select a planet</label>
-                        <select id="planet">
-                            <option value="0">Sun</option>
-                            <option value="1">Venus</option>
-                            <option value="2">Mercury</option>
-                            <option value="3">Earth</option>
-                            <option value="4">Mars</option>
-                            <option value="5">Jupiter</option>
-                            <option value="6">Saturn</option>
-                            <option value="7">Uranus</option>
-                            <option value="8">Neptune</option>
-                        </select>
-                    </form>
-                    <div  class="control"><input id="auto-rotate" name="auto-rotate" type="checkbox" onchange="AutoRotate(this)" /><label for="auto-rotate"> Rotation Speed</label></div>
-                    <div  class="control"><input id="rotation-speed" type="range" min="1" max="5" value="1" disabled /></div>
-                    <div  class="control"><input id="planet-size" name="planet-size" type="checkbox" onchange="changeSize(this)" /><label for="planet-size"> Planet Size </label></div>
-                    <div  class="control"><input id="planet-size-control" type="range" min="1" max="10" value="1" disabled /></div>
-                </div>
+                <br>
+                <br>
+                <form  id="planet-selection">
+                    <label for="planet">Select a planet</label>
+                    <select id="planet">
+                        <option value="0">Sun</option>
+                        <option value="1">Venus</option>
+                        <option value="2">Mercury</option>
+                        <option value="3">Earth</option>
+                        <option value="4">Mars</option>
+                        <option value="5">Jupiter</option>
+                        <option value="6">Saturn</option>
+                        <option value="7">Uranus</option>
+                        <option value="8">Neptune</option>
+                    </select>
+                </form>
+                <div class="control"><input id="planet-size" name="planet-size" type="checkbox" onchange="changeSize(this)" /><label for="planet-size"> Planet Size </label></div>
+                <div class="control"><input id="planet-size-control" type="range" min="0.1" max="2" value="1" step="0.05" disabled /></div>
             </div>
         </div>
     </div>

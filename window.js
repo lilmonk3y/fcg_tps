@@ -19,10 +19,8 @@ window.onload = function()
 	}
 
 	canvas.onwheel = function() { canvas.zoom(0.01*event.deltaY); }
-
 	
 	SetShininess(document.getElementById('shininess-exp'));
-
 
 	// When selecting another planet, we must clear all checkboxes and stop all active timers of local properties (planet size, ... )
 	// Make it load with its prev value
@@ -38,10 +36,8 @@ window.onload = function()
 		});
 	});
 
-
 	// Add key handlers to move camera around
 	document.addEventListener('keydown', event => keyDownMoveCamera(event), false);
-
 
 	document.addEventListener('keydown', (event) => {
 		var name = event.key;
@@ -63,7 +59,6 @@ window.onload = function()
 		}
 	})
 
-
 	document.addEventListener('keyup', (event) => {
 		var name = event.key;
 		if( isIndexOfPlanet(name) ){
@@ -83,13 +78,11 @@ window.onload = function()
 		}
 	});
 
-
 	document.body.onmousedown = function() {
 		if(mouseDown == 0){
 			mouseDown = 1;
 		}
 	}
-
 
 	document.body.onmouseup = function() {
 		if(mouseDown == 1){
@@ -97,16 +90,14 @@ window.onload = function()
 		}
 	}
 	
-
-	document.getElementById("controls").addEventListener("mouseenter", function(  ) {
+	document.getElementById("controls-div").addEventListener("mouseenter", function(  ) {
 		isOnDiv=true;
 	});
 
 
-	document.getElementById("controls").addEventListener("mouseout", function(  ) {
+	document.getElementById("controls-div").addEventListener("mouseleave", function(  ) {
 		isOnDiv=false;
 	});
-
 
 	// Add event listener for mouse movement
 	document.addEventListener('mousemove', event => mouseMoveCamera(event));
